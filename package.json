@@ -1,7 +1,7 @@
 {
   "name": "sudoku",
   "version": "0.1.0",
-  "main": "/src/index.js",
+  "main": "/src/index.tsx",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -9,8 +9,12 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-native": "^0.73.1",
+    "react-native-web": "^0.19.10",
     "react-scripts": "^5.0.0"
   },
   "browserslist": {
