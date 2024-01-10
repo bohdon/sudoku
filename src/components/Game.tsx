@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { GameMessage, GameWebSocket, UserMessage } from "../utils/online";
-import { NetSelection } from "../utils/types";
+import { GameWebSocket, UserMessage } from "../utils/online";
+import { NetSelection, NetState } from "../utils/types";
+import NetStatus from "./NetStatus";
 import Grid from "./Grid";
+import Numpad from "./Numpad";
 
 export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   const [netSelection, setNetSelection] = useState<NetSelection>(new Map());
   const netState = {
+    netState: "offline",
     netSelection: netSelection,
   };
 
@@ -38,7 +41,15 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
   return (
     <div className="game">
-      <Grid netState={netState} onSelectionChange={onGridSelectionChange} />
+      <div className="columns">
+        <div className="column box">
+          <Grid netState={netState} onSelectionChange={onGridSelectionChange} />
+          <NetStatus state={netState.netState as NetState} />
+        </div>
+        <div className="column box centered">
+          <Numpad />
+        </div>
+      </div>
     </div>
   );
 }

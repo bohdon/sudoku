@@ -1,7 +1,5 @@
-import { useState } from "react";
-
 interface TileProps {
-  value: string;
+  value: string | null;
   isSelected: boolean;
   isNetSelected: boolean;
   onClickEvent: () => void;
@@ -19,9 +17,9 @@ export default function Tile({
 
   return (
     <button
-      className={`tile
-        ${isSelected ? "selected" : ""}
-        ${isNetSelected ? "net-selected" : ""}`}
+      className={`tile ${isSelected ? "selected" : ""} ${
+        isNetSelected ? "net-selected" : ""
+      }`}
       onClick={onClick}
     >
       {value}

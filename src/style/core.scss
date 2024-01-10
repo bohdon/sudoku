@@ -1,4 +1,64 @@
 body {
-  font-family: sans-serif;
+  font-family: "Inter", sans-serif;
   background-color: $bg-color;
+  color: $fg-color;
+}
+
+button {
+  font-family: inherit;
+  background-color: $button-bg-color;
+  border: 1px solid $button-border-color;
+  border-radius: $radius-3;
+  color: inherit;
+
+  &:hover {
+    background-color: lighten($button-bg-color, 2);
+  }
+
+  &:active {
+    background-color: darken($button-bg-color, 2);
+  }
+}
+
+// common css components
+
+.badge {
+  font-size: $size-7;
+  background-color: darken($bg-color, 5);
+  border-radius: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  margin: 0.15rem;
+}
+
+.info {
+  background-color: $info-color;
+}
+
+.success {
+  background-color: $success-color;
+}
+
+.warning {
+  background-color: $warning-color;
+}
+
+.error {
+  background-color: $error-color;
+}
+
+// common layout
+
+.columns {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  &.centered {
+    align-self: center;
+  }
+}
+
+.box {
+  margin: 1rem;
 }
