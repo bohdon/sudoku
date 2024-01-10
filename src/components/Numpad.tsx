@@ -14,7 +14,7 @@ export default function Numpad({ onInput }: NumpadProps) {
   }
 
   function onClearClick() {
-    onInput(undefined, false);
+    onInput(undefined, isCandidate);
   }
 
   const numberButtons = numbers.map((num) => {

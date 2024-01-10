@@ -73,6 +73,13 @@ export class SolveController {
     return newState;
   }
 
+  /** Clear all candidates for a tile and return a new solve state. */
+  clearCandidates(tileId: number): SolveState {
+    var newState = this.cloneState();
+    newState.tiles[tileId].candidates = [];
+    return newState;
+  }
+
   /** Return true if there are any states to undo. */
   canUndo(): boolean {
     // can only undo up to 'last index - 1' of history

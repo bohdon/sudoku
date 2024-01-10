@@ -90,6 +90,10 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       if (value !== undefined) {
         newState = controller.toggleCandidate(selection, value);
       }
+      else
+      {
+        newState = controller.clearCandidates(selection);
+      }
     } else {
       if (value !== undefined) {
         newState = controller.setValue(selection, value);
