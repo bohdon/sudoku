@@ -18,13 +18,17 @@ export default function Numpad({ onInput }: NumpadProps) {
   }
 
   const numberButtons = numbers.map((num) => {
+    const idx = num - 1;
+    const col = idx % 3;
+    const row = Math.trunc(idx / 3);
+
     return (
-      <button
-        key={num}
-        className="btn text-5xl"
-        onClick={() => onNumClick(num)}
-      >
-        {num}
+      <button key={num} className="btn" onClick={() => onNumClick(num)}>
+        {isCandidate ? (
+          <span className={`num text-xl col-${col} row-${row}`}>{num}</span>
+        ) : (
+          <span className="num text-5xl">{num}</span>
+        )}
       </button>
     );
   });

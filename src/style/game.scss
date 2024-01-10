@@ -37,12 +37,12 @@ $tile-border-color-selected-other: rgba(43, 255, 156, 0.321);
 
   .num {
     position: absolute;
+    transform: translate(-50%, -50%);
 
     top: 50%;
     left: 50%;
 
     &.candidate {
-      transform: translate(-50%, -50%);
       opacity: 0.5;
     }
 
@@ -99,6 +99,7 @@ $tile-border-color-selected-other: rgba(43, 255, 156, 0.321);
 
   .numpad {
     .btn {
+      position: relative;
       width: $tile-size;
       height: $tile-size;
     }

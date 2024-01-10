@@ -72,12 +72,11 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   };
 
   function onGridSelectionChange(tileId: number) {
-    if (!gameSocket.socket) {
-      return;
-    }
-
     setSelection(tileId);
-    gameSocket.send({ type: "selection", tileId: tileId });
+
+    if (gameSocket.socket) {
+      gameSocket.send({ type: "selection", tileId: tileId });
+    }
   }
 
   /** Called when input is given from the numpad. */
