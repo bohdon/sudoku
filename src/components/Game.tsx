@@ -40,14 +40,19 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   }
 
   return (
-    <div className="game">
-      <div className="columns">
-        <div className="column box">
-          <Grid netState={netState} onSelectionChange={onGridSelectionChange} />
-          <NetStatus state={netState.netState as NetState} />
-        </div>
-        <div className="column box centered">
-          <Numpad />
+    <div className="su-game play-area">
+      <div className="play-area">
+        <div className="columns">
+          <div className="column box">
+            <Grid
+              netState={netState}
+              onSelectionChange={onGridSelectionChange}
+            />
+            <NetStatus state={netState.netState as NetState} />
+          </div>
+          <div className="column box centered">
+            <Numpad />
+          </div>
         </div>
       </div>
     </div>

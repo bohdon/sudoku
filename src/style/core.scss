@@ -6,24 +6,38 @@ body {
 
 button {
   font-family: inherit;
-  background-color: $button-bg-color;
-  border: 1px solid $button-border-color;
-  border-radius: $radius-3;
+  font-size: inherit;
   color: inherit;
-
-  &:hover {
-    background-color: lighten($button-bg-color, 2);
-  }
-
-  &:active {
-    background-color: darken($button-bg-color, 2);
-  }
 }
 
 // common css components
 
+.btn {
+  background-color: $button-bg-color;
+  border: 1px solid $button-border-color;
+  border-radius: $radius-3;
+  margin: 0.3rem;
+  padding: 0.4rem 0.7rem;
+
+  &.selected {
+    background-color: $button-bg-color-selected;
+    border-color: $button-border-color-selected;
+  }
+
+  &.dimmed {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    filter: brightness(0.8);
+  }
+}
+
 .badge {
-  font-size: $size-7;
   background-color: darken($bg-color, 5);
   border-radius: 0.3rem;
   padding: 0.3rem 0.5rem;
@@ -54,6 +68,8 @@ button {
 }
 
 .column {
+  width: 100%;
+
   &.centered {
     align-self: center;
   }
@@ -61,4 +77,46 @@ button {
 
 .box {
   margin: 1rem;
+}
+
+// customization
+
+.text-xs {
+  font-size: $size-xs;
+}
+.text-sm {
+  font-size: $size-sm;
+}
+.text-base {
+  font-size: $size-base;
+}
+.text-lg {
+  font-size: $size-lg;
+}
+.text-xl {
+  font-size: $size-xl;
+}
+.text-2xl {
+  font-size: $size-2xl;
+}
+.text-3xl {
+  font-size: $size-3xl;
+}
+.text-4xl {
+  font-size: $size-4xl;
+}
+.text-5xl {
+  font-size: $size-5xl;
+}
+.text-6xl {
+  font-size: $size-6xl;
+}
+.text-7xl {
+  font-size: $size-7xl;
+}
+.text-8xl {
+  font-size: $size-8xl;
+}
+.text-9xl {
+  font-size: $size-9xl;
 }
