@@ -1,6 +1,21 @@
 /**
- * Utils for online multiplayer.
+ * Types and utils for online multiplayer.
  */
+
+/** The possible states of network connection. */
+export type NetConnectionStatus = "offline" | "connecting" | "online";
+
+/** A map of other player's selected tiles, by client id. */
+export type NetSelection = Map<string, number>;
+
+/** All state needed for online play. */
+export interface NetState {
+  /** State of network connection. */
+  status: NetConnectionStatus;
+
+  /** Current selection of all other clients. */
+  selection: NetSelection;
+}
 
 /** Type defining all possible game message payloads. */
 export type GameMessage =

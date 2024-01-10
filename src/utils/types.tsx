@@ -1,72 +1,98 @@
-import { Vector2 } from "../math/Vector2";
-
-/** A map of other player's selected tiles, by client id. */
-export type NetSelection = Map<string, number>;
-
-/** The possible states of network connection. */
-export type NetState = "offline" | "connecting" | "online";
-
 /** Properties for a single tile of a solution. */
-interface TileSolveState {
-  /** The annotations for the tile. */
-  annotations: number[];
+export interface TileSolveState {
+  /** The annotated candidate values for the tile. */
+  candidates: number[];
   /** The chosen value for the tile. */
-  value: number;
+  value: number | undefined;
 }
 
 /** Properties for all tiles of a solution. */
-interface SolveState {
+export interface SolveState {
   /** Solve state for all tiles. */
   tiles: TileSolveState[];
 }
 
 /**
- * Tracks both the state and history of states for the game,
- * as well as its settings, the current puzzle, and other data.
+ * A controller for modifying SolveStates.
  */
-export class GameState {
-  // the size of the grid
-  dimensions: Vector2;
-
-  // the current and previous state data
+export class SolveController {
+  /** History of all solve states. */
   history: SolveState[];
 
-  /** The current number of states that have been undone, reset when a new state is set. */
-  undoDepth: number = 0;
+  /** The current depth of undo, reset to 0 when state changes. */
+  undoDepth: number;
 
-  constructor() {
-    this.dimensions = new Vector2(9, 9);
-    this.history = Array(1);
+  constructor(history: SolveState[], undoDepth = 0) {
+    if (history.length == 0 || !history[0]) {
+      throw new Error("history must have at least 1 state");
+    }
+    this.history = history;
+    this.undoDepth = undoDepth;
   }
 
   /** Return the current solve state. */
-  solveState(): SolveState {
-    return this.history[this.history.length - 1];
+  state(): SolveState {
+    return this.history[this.history.length - 1 - this.undoDepth];
   }
 
-  /** Set a new solve state, adding it to the history. */
-  setSolveState(state: SolveState) {
-    this.history.push(state);
+  cloneState(): SolveState {
+    return structuredClone(this.state());
+    // var solveState = this.state();
+    // return {
+    //   tiles: Array.from(solveState.tiles),
+    // };
   }
 
-  /** Undo the last solve state change and pop it from history. */
-  undo(): boolean {
+  /** Set the value of a tile and return a new solve state */
+  setValue(tileId: number, value: number | undefined): SolveState {
+    var newState = this.cloneState();
+    newState.tiles[tileId].value = value;
+    return newState;
+  }
+
+  /** Clear the value for a tile and return a new solve state */
+  clearValue(tileId: number): SolveState {
+    var newState = this.cloneState();
+    newState.tiles[tileId].value = undefined;
+    return newState;
+  }
+
+  /** Toggle the candidate of a tile and return a new solve state */
+  toggleCandidate(tileId: number, value: number): SolveState {
+    var newState = this.cloneState();
+    var candidates = newState.tiles[tileId].candidates;
+    var valueIdx = candidates.indexOf(value);
+    if (valueIdx != -1) {
+      // remove
+      candidates.splice(valueIdx, 1);
+    } else {
+      // add it
+      candidates.push(value);
+      candidates.sort();
+    }
+    return newState;
+  }
+
+  /** Return true if there are any states to undo. */
+  canUndo(): boolean {
     // can only undo up to 'last index - 1' of history
-    if (this.undoDepth >= this.history.length - 2) {
-      return false;
-    }
-
-    this.undoDepth++;
-    return true;
+    return this.undoDepth < history.length - 2;
   }
 
-  /** Redo an undone solve state. */
-  redo(): boolean {
-    if (this.undoDepth == 0) {
-      return false;
-    }
+  /** Return true if there are any undos that can be redone. */
+  canRedo(): boolean {
+    return this.undoDepth > 0;
+  }
 
-    this.undoDepth--;
-    return true;
+  /** Return an empty solve state. */
+  static initialState(): SolveState {
+    var tiles = Array<TileSolveState>(81);
+    for (let i = 0; i < tiles.length; i++) {
+      tiles[i] = {
+        value: undefined,
+        candidates: [],
+      };
+    }
+    return { tiles: tiles };
   }
 }

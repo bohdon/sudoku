@@ -1,17 +1,29 @@
 import { useState } from "react";
 
-export default function Numpad() {
+interface NumpadProps {
+  onInput: (value: number | undefined, isCandidate: boolean) => void;
+}
+
+export default function Numpad({ onInput }: NumpadProps) {
   /** Is the user inputting candidates, or a chosen value? */
-  const [isCandidate, setIsCandidate] = useState(true);
+  const [isCandidate, setIsCandidate] = useState(false);
   const numbers = Array.from(Array(9).keys()).map((elem) => elem + 1);
 
   function onNumClick(value: number) {
-    console.log(value, isCandidate);
+    onInput(value, isCandidate);
+  }
+
+  function onClearClick() {
+    onInput(undefined, false);
   }
 
   const numberButtons = numbers.map((num) => {
     return (
-      <button className="btn text-4xl" onClick={() => onNumClick(num)}>
+      <button
+        key={num}
+        className="btn text-5xl"
+        onClick={() => onNumClick(num)}
+      >
         {num}
       </button>
     );
@@ -32,7 +44,12 @@ export default function Numpad() {
           Normal
         </button>
       </div>
-      <div className="grid tri-grid numpad">{numberButtons}</div>
+      <div className="numpad">
+        <div className="grid tri-grid">{numberButtons}</div>
+        <button className="btn text-5xl" onClick={onClearClick}>
+          X
+        </button>
+      </div>
     </div>
   );
 }

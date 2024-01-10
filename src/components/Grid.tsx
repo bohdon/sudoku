@@ -1,19 +1,29 @@
 import { useState } from "react";
-import { NetSelection } from "../utils/types";
+import { SolveState } from "../utils/types";
+import { NetState } from "../utils/online";
 import SubGrid from "./SubGrid";
 
 interface GridProps {
+  /** Currently selected tile. */
+  selection: number | undefined;
+
+  /** The current solve state. */
+  solveState: SolveState;
+
+  /** The current net state */
+  netState: NetState;
+
+  /** Called when the selection has changed by clicking on the grid. */
   onSelectionChange: (tileId: number) => void;
-  netState: { netSelection: NetSelection };
 }
 
 /** A 3x3 grid of SubGrids, each containing a 3x3 grid of tiles. */
-export default function Grid({ onSelectionChange, netState }: GridProps) {
-  const [selectedTile, setSelectedTile] = useState(-1);
-  // all 81 tiles in the grid
-  const tileIds = Array.from(Array(81).keys());
-  const netSelectedTiles = Array.from(netState.netSelection.values());
-
+export default function Grid({
+  selection,
+  solveState,
+  netState,
+  onSelectionChange,
+}: GridProps) {
   var subGridTileIds = Array(9);
   {
     // build 9 groups of 9 tile ids (81 total)
@@ -28,7 +38,6 @@ export default function Grid({ onSelectionChange, netState }: GridProps) {
   }
 
   function onTileClick(tileId: number) {
-    setSelectedTile(tileId);
     onSelectionChange(tileId);
   }
 
@@ -37,8 +46,9 @@ export default function Grid({ onSelectionChange, netState }: GridProps) {
       <SubGrid
         key={element}
         tileIds={element}
-        selection={selectedTile}
-        netSelection={netState.netSelection}
+        solveState={solveState}
+        selection={selection}
+        netState={netState}
         onTileClick={onTileClick}
       />
     );

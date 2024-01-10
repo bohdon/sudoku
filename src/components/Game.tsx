@@ -1,16 +1,56 @@
 import { useState } from "react";
-import { GameWebSocket, UserMessage } from "../utils/online";
-import { NetSelection, NetState } from "../utils/types";
-import NetStatus from "./NetStatus";
+import {
+  GameWebSocket,
+  NetConnectionStatus,
+  NetSelection,
+  NetState,
+  UserMessage,
+} from "../utils/online";
+import { SolveController, SolveState, TileSolveState } from "../utils/types";
 import Grid from "./Grid";
 import Numpad from "./Numpad";
+import NetStatus from "./NetStatus";
 
+/**
+ * The main game mode and state. Contains the generated puzzle as well
+ * as the current and all previous solve states. Uses GameWebSocket to
+ * replicate changes from other clients.
+ */
 export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
+  // all current and previous solve states
+  const [history, setHistory] = useState<SolveState[]>([
+    SolveController.initialState(),
+  ]);
+
+  // the current number of undos compared to the history, reset to 0 when state changes
+  const [undoDepth, setUndoDepth] = useState(0);
+
+  // currently selected tile
+  const [selection, setSelection] = useState<number | undefined>();
+
+  // current connection state
+  const [netConnectionState, setNetConnectionState] =
+    useState<NetConnectionStatus>("offline");
+
+  // selection of other players online
   const [netSelection, setNetSelection] = useState<NetSelection>(new Map());
-  const netState = {
-    netState: "offline",
-    netSelection: netSelection,
+
+  // controller for working with solve states
+  const controller = new SolveController(history, undoDepth);
+
+  // the current solve state, taking into account undo/redo
+  const solveState = controller.state();
+
+  // combined network state, for passing to other components
+  const netState: NetState = {
+    status: netConnectionState,
+    selection: netSelection,
   };
+
+  /** Set the new solve state, adding it to the history. */
+  function setSolveState(newState: SolveState) {
+    setHistory([...history, newState]);
+  }
 
   gameSocket.onMessageEvent = (userMessage: UserMessage) => {
     let message: any = userMessage.message;
@@ -36,7 +76,32 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       return;
     }
 
+    setSelection(tileId);
     gameSocket.send({ type: "selection", tileId: tileId });
+  }
+
+  /** Called when input is given from the numpad. */
+  function onNumpadInput(value: number | undefined, isCandidate: boolean) {
+    if (!selection) {
+      return;
+    }
+
+    var newState = null;
+    if (isCandidate) {
+      if (value !== undefined) {
+        newState = controller.toggleCandidate(selection, value);
+      }
+    } else {
+      if (value !== undefined) {
+        newState = controller.setValue(selection, value);
+      } else {
+        newState = controller.clearValue(selection);
+      }
+    }
+
+    if (newState) {
+      setSolveState(newState);
+    }
   }
 
   return (
@@ -45,13 +110,15 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
         <div className="columns">
           <div className="column box">
             <Grid
+              solveState={solveState}
+              selection={selection}
               netState={netState}
               onSelectionChange={onGridSelectionChange}
             />
-            <NetStatus state={netState.netState as NetState} />
+            <NetStatus netState={netState} />
           </div>
           <div className="column box centered">
-            <Numpad />
+            <Numpad onInput={onNumpadInput} />
           </div>
         </div>
       </div>

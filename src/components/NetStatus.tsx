@@ -1,19 +1,14 @@
-import { NetState } from "../utils/types";
+import { NetState } from "../utils/online";
 
 interface NetStatusProps {
-  state: NetState;
+  netState: NetState;
 }
 
-const stateClasses = {
-  // state: string
-};
-
-export default function NetStatus({ state }: NetStatusProps) {
-  const stateClass = state;
+export default function NetStatus({ netState }: NetStatusProps) {
   return (
     <>
       <div className="box">
-        <span className="net-status badge">{state}</span>
+        <span className="net-status badge">{netState.status}</span>
       </div>
     </>
   );
