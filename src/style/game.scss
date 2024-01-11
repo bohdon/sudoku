@@ -3,10 +3,12 @@ $grid-color: #888;
 $grid-color-sub: #555;
 $tile-size: 4.5rem;
 $tile-color-hover: $fg-color;
-$tile-bg-color-hover: lighten($bg-color, 3);
 $tile-color-selected: lighten($fg-color, 50);
+$tile-bg-color-hover: lighten($bg-color, 3);
 $tile-bg-color-selected: rgba(255, 255, 255, 0.273);
 $tile-border-color-selected-other: rgba(43, 255, 156, 0.321);
+$puzzle-tile-color: hsl(0, 0%, 50%);
+$puzzle-tile-bg-color: hsla(0, 0%, 100%, 0.03);
 
 .su-game {
   .play-area {
@@ -81,6 +83,11 @@ $tile-border-color-selected-other: rgba(43, 255, 156, 0.321);
 
     background: none;
     border: 1px solid $grid-color-sub;
+
+    &.puzzle {
+      color: $puzzle-tile-color;
+      background: $puzzle-tile-bg-color;
+    }
 
     &:hover {
       background-color: $tile-bg-color-hover;

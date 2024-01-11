@@ -1,13 +1,10 @@
-import { SolveState } from "../utils/gameTypes";
+import { GameState } from "../utils/gameTypes";
 import { NetState } from "../utils/onlineTypes";
 import SubGrid from "./SubGrid";
 
 interface GridProps {
-  /** Currently selected tile. */
-  selection: number | undefined;
-
-  /** The current solve state. */
-  solveState: SolveState;
+  /** The current puzzle, solve state, selection. */
+  gameState: GameState;
 
   /** The current net state */
   netState: NetState;
@@ -18,8 +15,7 @@ interface GridProps {
 
 /** A 3x3 grid of SubGrids, each containing a 3x3 grid of tiles. */
 export default function Grid({
-  selection,
-  solveState,
+  gameState,
   netState,
   onSelectionChange,
 }: GridProps) {
@@ -45,8 +41,7 @@ export default function Grid({
       <SubGrid
         key={element}
         tileIds={element}
-        solveState={solveState}
-        selection={selection}
+        gameState={gameState}
         netState={netState}
         onTileClick={onTileClick}
       />

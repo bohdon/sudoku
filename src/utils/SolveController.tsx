@@ -1,19 +1,23 @@
-import { SolveState, TileSolveState } from "./gameTypes";
+import { Puzzle, SolveState, TileSolveState } from "./gameTypes";
 
 /**
  * A controller for modifying SolveStates.
  */
 export default class SolveController {
+  /** The puzzle being solved */
+  puzzle: Puzzle;
+
   /** History of all solve states. */
   history: SolveState[];
 
   /** The current depth of undo, reset to 0 when state changes. */
   undoDepth: number;
 
-  constructor(history: SolveState[], undoDepth = 0) {
+  constructor(puzzle: Puzzle, history: SolveState[], undoDepth = 0) {
     if (history.length == 0 || !history[0]) {
       throw new Error("history must have at least 1 state");
     }
+    this.puzzle = puzzle;
     this.history = history;
     this.undoDepth = undoDepth;
   }
@@ -25,28 +29,48 @@ export default class SolveController {
 
   cloneState(): SolveState {
     return structuredClone(this.state());
-    // var solveState = this.state();
-    // return {
-    //   tiles: Array.from(solveState.tiles),
-    // };
+  }
+
+  /** Return true if a tile is part of the original puzzle. */
+  isPuzzleTile(tileId: number): boolean {
+    return this.puzzle.tiles[tileId] != null;
+  }
+
+  /** Return true if a tile is not part of the original puzzle and can be changed. */
+  canModifyTile(tileId: number): boolean {
+    return !this.isPuzzleTile(tileId);
+  }
+
+  /** Return true if a tile has a value. */
+  hasValue(tileId: number): boolean {
+    return this.state().tiles[tileId].value != null;
   }
 
   /** Set the value of a tile and return a new solve state */
-  setValue(tileId: number, value: number | undefined): SolveState {
+  setValue(tileId: number, value: number | null): SolveState | null {
+    if (!this.canModifyTile(tileId)) {
+      return null;
+    }
     var newState = this.cloneState();
     newState.tiles[tileId].value = value;
     return newState;
   }
 
   /** Clear the value for a tile and return a new solve state */
-  clearValue(tileId: number): SolveState {
+  clearValue(tileId: number): SolveState | null {
+    if (!this.canModifyTile(tileId)) {
+      return null;
+    }
     var newState = this.cloneState();
-    newState.tiles[tileId].value = undefined;
+    newState.tiles[tileId].value = null;
     return newState;
   }
 
   /** Toggle the candidate of a tile and return a new solve state */
-  toggleCandidate(tileId: number, value: number): SolveState {
+  toggleCandidate(tileId: number, value: number): SolveState | null {
+    if (!this.canModifyTile(tileId)) {
+      return null;
+    }
     var newState = this.cloneState();
     var candidates = newState.tiles[tileId].candidates;
     var valueIdx = candidates.indexOf(value);
@@ -62,7 +86,10 @@ export default class SolveController {
   }
 
   /** Clear all candidates for a tile and return a new solve state. */
-  clearCandidates(tileId: number): SolveState {
+  clearCandidates(tileId: number): SolveState | null {
+    if (!this.canModifyTile(tileId)) {
+      return null;
+    }
     var newState = this.cloneState();
     newState.tiles[tileId].candidates = [];
     return newState;
@@ -80,11 +107,11 @@ export default class SolveController {
   }
 
   /** Return an empty solve state. */
-  static initialState(): SolveState {
+  static initialState(puzzle: Puzzle | null = null): SolveState {
     var tiles = Array<TileSolveState>(81);
     for (let i = 0; i < tiles.length; i++) {
       tiles[i] = {
-        value: undefined,
+        value: puzzle ? puzzle.tiles[i] : null,
         candidates: [],
       };
     }

@@ -1,16 +1,14 @@
 import { NetState } from "../utils/onlineTypes";
-import { SolveState } from "../utils/gameTypes";
+import { GameState } from "../utils/gameTypes";
 import Tile from "./Tile";
+import SolveController from "../utils/SolveController";
 
 interface SubGridProps {
   /** The array of all tiles to display in this block. */
   tileIds: number[];
 
-  /** The current displayed solve state. */
-  solveState: SolveState;
-
-  /** The currently selected tile. */
-  selection: number | undefined;
+  /** The current puzzle, solve state, selection. */
+  gameState: GameState;
 
   /** The current net state */
   netState: NetState;
@@ -22,8 +20,7 @@ interface SubGridProps {
 /** A 3x3 grid containing the actual tiles for a region. */
 export default function SubGrid({
   tileIds,
-  solveState,
-  selection,
+  gameState,
   netState,
   onTileClick,
 }: SubGridProps) {
@@ -31,18 +28,19 @@ export default function SubGrid({
   const netSelectedTiles = Array.from(netState.selection.values());
 
   const tiles = tileIds.map((tileId) => {
-    const tileState = solveState.tiles[tileId];
+    const tileState = gameState.solveState
+      ? gameState.solveState.tiles[tileId]
+      : null;
+    const isNetSelected = netSelectedTiles.indexOf(tileId) != -1;
+    const isPuzzleTile = gameState.puzzle?.tiles[tileId] != null;
 
     return (
       <Tile
         key={tileId}
         state={tileState}
-        isSelected={selection === tileId}
-        isNetSelected={
-          netSelectedTiles.findIndex((element) => {
-            return element == tileId;
-          }) != -1
-        }
+        isSelected={gameState.selection === tileId}
+        isNetSelected={isNetSelected}
+        isPuzzleTile={isPuzzleTile}
         onClickEvent={() => onTileClick(tileId)}
       />
     );

@@ -5,12 +5,18 @@ import {
   NetState,
   UserMessage,
 } from "../utils/onlineTypes";
-import { SolveState } from "../utils/gameTypes";
+import {
+  GameState,
+  Puzzle,
+  SolveHistory,
+  SolveState,
+} from "../utils/gameTypes";
 import GameWebSocket from "../utils/GameWebSocket";
 import SolveController from "../utils/SolveController";
 import Grid from "./Grid";
 import Numpad from "./Numpad";
 import NetStatus from "./NetStatus";
+import PuzzleController from "../utils/PuzzleMaker";
 
 /**
  * The main game mode and state. Contains the generated puzzle as well
@@ -18,8 +24,11 @@ import NetStatus from "./NetStatus";
  * replicate changes from other clients.
  */
 export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
+  // the current puzzle to solve
+  const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+
   // all current and previous solve states
-  const [history, setHistory] = useState<SolveState[]>([
+  const [history, setHistory] = useState<SolveHistory>([
     SolveController.initialState(),
   ]);
 
@@ -27,7 +36,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   const [undoDepth, setUndoDepth] = useState(0);
 
   // currently selected tile
-  const [selection, setSelection] = useState<number | undefined>();
+  const [selection, setSelection] = useState<number | null>(null);
 
   // current connection state
   const [netConnectionStatus, setNetConnectionStatus] =
@@ -41,10 +50,17 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   const [netSelection, setNetSelection] = useState<NetSelection>(new Map());
 
   // controller for working with solve states
-  const controller = new SolveController(history, undoDepth);
+  const controller = puzzle
+    ? new SolveController(puzzle, history, undoDepth)
+    : null;
 
-  // the current solve state, taking into account undo/redo
-  const solveState = controller.state();
+  // the current bundled game state for passing around
+  const gameState: GameState = {
+    puzzle: puzzle,
+    history: history,
+    solveState: controller ? controller.state() : null,
+    selection: selection,
+  };
 
   // combined network state, for passing to other components
   const netState: NetState = {
@@ -80,6 +96,18 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     }
   };
 
+  function onNewPuzzleClick() {
+    if (puzzle && !confirm("Generate a new puzzle?")) {
+      return;
+    }
+
+    var puzzleController = new PuzzleController();
+    var newPuzzle = puzzleController.makePuzzle();
+    setPuzzle(newPuzzle);
+    setSolveState(SolveController.initialState(newPuzzle));
+    console.log(newPuzzle);
+  }
+
   function onGridSelectionChange(tileId: number) {
     setSelection(tileId);
 
@@ -90,7 +118,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
   /** Called when input is given from the numpad. */
   function onNumpadInput(value: number | undefined, isCandidate: boolean) {
-    if (!selection) {
+    if (!selection || !controller) {
       return;
     }
     var newState = null;
@@ -99,7 +127,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       // clear current value or candidates.
       // regardless of candidate mode, always clear any value first
       // so that candidates aren't cleared invisibly
-      if (solveState.tiles[selection].value) {
+      if (controller.hasValue(selection)) {
         newState = controller.clearValue(selection);
       } else if (isCandidate) {
         newState = controller.clearCandidates(selection);
@@ -123,9 +151,11 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       <div className="play-area">
         <div className="columns">
           <div className="column box">
+            <button className="box btn" onClick={onNewPuzzleClick}>
+              New
+            </button>
             <Grid
-              solveState={solveState}
-              selection={selection}
+              gameState={gameState}
               netState={netState}
               onSelectionChange={onGridSelectionChange}
             />
