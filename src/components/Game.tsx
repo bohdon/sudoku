@@ -150,20 +150,22 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   return (
     <div className="su-game play-area">
       <div className="play-area">
-        <div className="columns">
+        <div className="columns wrap">
           <div className="column box">
-            <div>
-              <button className="box btn" onClick={onNewPuzzleClick}>
+            <div className="box flex">
+              <button className="btn" onClick={onNewPuzzleClick}>
                 New
               </button>
-              {puzzle != null ? <PuzzleInfo gameState={gameState} /> : null}
+              <span className="align-right">
+                {puzzle != null ? <PuzzleInfo gameState={gameState} /> : null}
+                <NetStatus netState={netState} />
+              </span>
             </div>
             <Grid
               gameState={gameState}
               netState={netState}
               onSelectionChange={onGridSelectionChange}
             />
-            <NetStatus netState={netState} />
           </div>
           <div className="column box centered">
             <Numpad onInput={onNumpadInput} />

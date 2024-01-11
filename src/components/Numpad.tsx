@@ -25,33 +25,31 @@ export default function Numpad({ onInput }: NumpadProps) {
     return (
       <button key={num} className="btn" onClick={() => onNumClick(num)}>
         {isCandidate ? (
-          <span className={`num text-xl col-${col} row-${row}`}>{num}</span>
+          <span className={`num num-sm col-${col} row-${row}`}>{num}</span>
         ) : (
-          <span className="num text-5xl">{num}</span>
+          <span className="num num-lg">{num}</span>
         )}
       </button>
     );
   });
   return (
     <div className="">
-      <div className="columns">
-        <button
-          className={`column btn ${isCandidate ? "selected" : "dimmed"}`}
-          onClick={() => setIsCandidate(true)}
-        >
-          Candidate
+      <div className="numpad grid grid-col-3">
+        {numberButtons}
+        <button className="btn" onClick={onClearClick}>
+          <span className="num-lg">X</span>
         </button>
         <button
-          className={`column btn ${isCandidate ? "dimmed" : "selected"}`}
+          className={`btn ${isCandidate ? "dimmed" : "selected"}`}
           onClick={() => setIsCandidate(false)}
         >
-          Normal
+          <span className="num-lg">#</span>
         </button>
-      </div>
-      <div className="numpad">
-        <div className="grid tri-grid">{numberButtons}</div>
-        <button className="btn text-5xl" onClick={onClearClick}>
-          X
+        <button
+          className={`btn ${isCandidate ? "selected" : "dimmed"}`}
+          onClick={() => setIsCandidate(true)}
+        >
+          <span className="num-sm">#</span>
         </button>
       </div>
     </div>

@@ -48,5 +48,5 @@ export default function Grid({
     );
   });
 
-  return <div className="grid main-grid tri-grid">{subGrids}</div>;
+  return <div className="grid main-grid grid-col-3 grid-row-3">{subGrids}</div>;
 }

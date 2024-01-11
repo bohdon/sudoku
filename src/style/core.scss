@@ -65,18 +65,39 @@ button {
 .columns {
   display: flex;
   flex-direction: row;
+
+  @media (max-width: $media-sm) {
+    flex-direction: column;
+  }
 }
 
 .column {
-  width: 100%;
-
   &.centered {
     align-self: center;
   }
 }
 
+.flex {
+  display: flex;
+  flex-direction: row;
+
+  span {
+    align-self: center;
+  }
+}
+
+.align-right {
+  position: absolute;
+  right: 0px;
+}
+
 .box {
+  position: relative;
   margin: 1rem;
+
+  @media (max-width: $media-lg) {
+    margin: 0.5rem;
+  }
 }
 
 // customization

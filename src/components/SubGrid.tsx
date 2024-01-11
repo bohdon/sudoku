@@ -46,5 +46,5 @@ export default function SubGrid({
     );
   });
 
-  return <div className="grid sub-grid tri-grid">{tiles}</div>;
+  return <div className="grid sub-grid grid-col-3 grid-row-3">{tiles}</div>;
 }

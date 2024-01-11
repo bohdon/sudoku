@@ -18,14 +18,8 @@ export default function NetStatus({ netState }: NetStatusProps) {
 
   const className = netState;
   return (
-    <>
-      <div className="box">
-        <span
-          className={`net-status badge ${cssClassForStatus(netState.status)}`}
-        >
-          {netState.status}
-        </span>
-      </div>
-    </>
+    <span className={`net-status badge ${cssClassForStatus(netState.status)}`}>
+      {netState.status}
+    </span>
   );
 }

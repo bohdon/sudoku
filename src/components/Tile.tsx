@@ -23,7 +23,7 @@ export default function Tile({
 
   var content;
   if (value) {
-    content = <span className="text-5xl">{value}</span>;
+    content = <span className="num-lg">{value}</span>;
   } else {
     content = candidates.map((num) => {
       const idx = num - 1;
@@ -32,7 +32,7 @@ export default function Tile({
       return (
         <span
           key={num}
-          className={`num candidate text-base col-${col} row-${row}`}
+          className={`num candidate num-sm col-${col} row-${row}`}
         >
           {num}
         </span>
