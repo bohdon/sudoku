@@ -84,21 +84,23 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     if (!selection) {
       return;
     }
-
     var newState = null;
-    if (isCandidate) {
-      if (value !== undefined) {
-        newState = controller.toggleCandidate(selection, value);
-      }
-      else
-      {
+
+    if (value === undefined) {
+      // clear current value or candidates.
+      // regardless of candidate mode, always clear any value first
+      // so that candidates aren't cleared invisibly
+      if (solveState.tiles[selection].value) {
+        newState = controller.clearValue(selection);
+      } else if (isCandidate) {
         newState = controller.clearCandidates(selection);
       }
     } else {
-      if (value !== undefined) {
-        newState = controller.setValue(selection, value);
+      // set a new value
+      if (isCandidate) {
+        newState = controller.toggleCandidate(selection, value);
       } else {
-        newState = controller.clearValue(selection);
+        newState = controller.setValue(selection, value);
       }
     }
 
