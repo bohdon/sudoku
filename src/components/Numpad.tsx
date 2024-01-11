@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 interface NumpadProps {
+  isEnabled: boolean;
   onInput: (value: number | undefined, isCandidate: boolean) => void;
 }
 
-export default function Numpad({ onInput }: NumpadProps) {
+export default function Numpad({ isEnabled, onInput }: NumpadProps) {
   /** Is the user inputting candidates, or a chosen value? */
   const [isCandidate, setIsCandidate] = useState(false);
   const numbers = Array.from(Array(9).keys()).map((elem) => elem + 1);
@@ -33,25 +34,23 @@ export default function Numpad({ onInput }: NumpadProps) {
     );
   });
   return (
-    <div className="">
-      <div className="numpad grid grid-col-3">
-        {numberButtons}
-        <button className="btn" onClick={onClearClick}>
-          <span className="num-lg">X</span>
-        </button>
-        <button
-          className={`btn ${isCandidate ? "dimmed" : "selected"}`}
-          onClick={() => setIsCandidate(false)}
-        >
-          <span className="num-lg">#</span>
-        </button>
-        <button
-          className={`btn ${isCandidate ? "selected" : "dimmed"}`}
-          onClick={() => setIsCandidate(true)}
-        >
-          <span className="num-sm">#</span>
-        </button>
-      </div>
+    <div className={`numpad grid grid-col-3 ${isEnabled ? "" : "disabled"}`}>
+      {numberButtons}
+      <button className="btn" onClick={onClearClick}>
+        <span className="num-lg">X</span>
+      </button>
+      <button
+        className={`btn ${isCandidate ? "dimmed" : "selected"}`}
+        onClick={() => setIsCandidate(false)}
+      >
+        <span className="num-lg">#</span>
+      </button>
+      <button
+        className={`btn ${isCandidate ? "selected" : "dimmed"}`}
+        onClick={() => setIsCandidate(true)}
+      >
+        <span className="num-sm">#</span>
+      </button>
     </div>
   );
 }

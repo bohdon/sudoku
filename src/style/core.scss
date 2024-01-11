@@ -12,6 +12,10 @@ button {
 
 // common css components
 
+.disabled {
+  opacity: 0.25;
+}
+
 .btn {
   background-color: $button-bg-color;
   border: 1px solid $button-border-color;

@@ -222,7 +222,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
             />
           </div>
           <div className="column box centered">
-            <Numpad onInput={onNumpadInput} />
+            <Numpad isEnabled={puzzle != null} onInput={onNumpadInput} />
           </div>
         </div>
       </div>
