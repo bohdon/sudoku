@@ -197,7 +197,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
   function setNewPuzzle(newPuzzle: Puzzle) {
     setPuzzle(newPuzzle);
-    setSolveState(SolveController.initialState(newPuzzle));
+    setHistory([SolveController.initialState(newPuzzle)]);
     console.log(newPuzzle);
   }
 
