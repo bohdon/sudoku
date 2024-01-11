@@ -2,7 +2,7 @@
  * Types and utils for online multiplayer.
  */
 
-import { Puzzle, SolveHistory, TileSolveState } from "./gameTypes";
+import { Puzzle, SolveHistory, SolveResult, TileSolveState } from "./gameTypes";
 
 /** The possible states of network connection. */
 export type NetConnectionStatus = "offline" | "connecting" | "online" | "error";
@@ -35,6 +35,7 @@ type GameStateMessage = {
   type: "game-state";
   puzzle: Puzzle | null;
   history: SolveHistory;
+  solveResult: SolveResult;
   selection: number | null;
 };
 

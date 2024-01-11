@@ -33,14 +33,17 @@ export default function SubGrid({
       : null;
     const isNetSelected = netSelectedTiles.indexOf(tileId) != -1;
     const isPuzzleTile = gameState.puzzle?.tiles[tileId] != null;
+    const hasError = gameState.solveResult.errors.includes(tileId);
 
     return (
       <Tile
         key={tileId}
+        tileId={tileId}
         state={tileState}
         isSelected={gameState.selection === tileId}
         isNetSelected={isNetSelected}
         isPuzzleTile={isPuzzleTile}
+        hasError={hasError}
         onClickEvent={() => onTileClick(tileId)}
       />
     );

@@ -1,4 +1,4 @@
-import { Puzzle, SolveState, TileSolveState } from "./gameTypes";
+import { Puzzle, SolveResult, SolveState, TileSolveState } from "./gameTypes";
 
 /**
  * A controller for modifying SolveStates.
@@ -105,6 +105,30 @@ export default class SolveController {
     return newState;
   }
 
+  /** Check the current solve state and return a solve result. */
+  checkSolve(solveState: SolveState, puzzle: Puzzle): SolveResult {
+    var isCompleted = true;
+    var errors: number[] = [];
+
+    for (let i = 0; i < solveState.tiles.length; i++) {
+      const value = solveState.tiles[i].value;
+      if (value == null || value != puzzle.solution[i]) {
+        // either missing or incorrect
+        isCompleted = false;
+
+        if (value != null) {
+          // incorrect
+          errors.push(i);
+        }
+      }
+    }
+
+    return {
+      isCompleted: isCompleted,
+      errors: errors,
+    };
+  }
+
   /** Return true if there are any states to undo. */
   canUndo(): boolean {
     // can only undo up to 'last index - 1' of history
@@ -116,7 +140,7 @@ export default class SolveController {
     return this.undoDepth > 0;
   }
 
-  /** Return an empty solve state. */
+  /** Return an initial solve state with the puzzle tiles filled in. */
   static initialState(puzzle: Puzzle | null = null): SolveState {
     var tiles = Array<TileSolveState>(81);
     for (let i = 0; i < tiles.length; i++) {
@@ -126,5 +150,10 @@ export default class SolveController {
       };
     }
     return { tiles: tiles };
+  }
+
+  /** Return an empty solve result. */
+  static emptySolveResult(): SolveResult {
+    return { isCompleted: false, errors: [] };
   }
 }

@@ -1,3 +1,4 @@
+import { tileIdToBlockId } from "../utils/PuzzleMaker";
 import { GameState } from "../utils/gameTypes";
 import { NetState } from "../utils/onlineTypes";
 import SubGrid from "./SubGrid";
@@ -19,16 +20,17 @@ export default function Grid({
   netState,
   onSelectionChange,
 }: GridProps) {
-  var subGridTileIds = Array(9);
+  var subGridTileIds = Array(9)
+    .fill(null)
+    .map((elem): number[] => []);
   {
-    // build 9 groups of 9 tile ids (81 total)
-    let tileId = 0;
-    for (let i = 0; i < 9; i++) {
-      let theseTileIds = Array.from(Array(9).keys()).map(
-        (element) => element + tileId
-      );
-      subGridTileIds.push(theseTileIds);
-      tileId += 9;
+    // build 9 groups of 9 tile ids (81 total),
+    // the ids need to be sliced since were building blocks,
+    // but tile indexes are organized by rows
+    const total = 9 * 9;
+    for (let tileId = 0; tileId < total; tileId++) {
+      let blockIdx = tileIdToBlockId(tileId);
+      subGridTileIds[blockIdx].push(tileId);
     }
   }
 
@@ -36,10 +38,12 @@ export default function Grid({
     onSelectionChange(tileId);
   }
 
-  const subGrids = subGridTileIds.map((element) => {
+  const isCompleted = gameState.solveResult.isCompleted;
+
+  const subGrids = subGridTileIds.map((element, idx) => {
     return (
       <SubGrid
-        key={element}
+        key={idx}
         tileIds={element}
         gameState={gameState}
         netState={netState}
@@ -48,5 +52,13 @@ export default function Grid({
     );
   });
 
-  return <div className="grid main-grid grid-col-3 grid-row-3">{subGrids}</div>;
+  return (
+    <div
+      className={`grid main-grid grid-col-3 grid-row-3 ${
+        isCompleted ? "completed" : ""
+      }`}
+    >
+      {subGrids}
+    </div>
+  );
 }

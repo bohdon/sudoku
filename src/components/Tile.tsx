@@ -1,28 +1,29 @@
 import { TileSolveState } from "../utils/gameTypes";
 
 interface TileProps {
+  tileId: number;
   state: TileSolveState | null;
   isSelected: boolean;
   isNetSelected: boolean;
   isPuzzleTile: boolean;
+  hasError: boolean;
   onClickEvent: () => void;
 }
 
 export default function Tile({
+  tileId,
   state,
   isSelected,
   isNetSelected,
   isPuzzleTile,
+  hasError,
   onClickEvent,
 }: TileProps) {
-  function onClick() {
-    onClickEvent();
-  }
   const candidates = state ? state.candidates : [];
-  const value = state ? state.value : null;
+  const value = state?.value;
 
   var content;
-  if (value) {
+  if (value != null) {
     content = <span className="num-lg">{value}</span>;
   } else {
     content = candidates.map((num) => {
@@ -44,8 +45,8 @@ export default function Tile({
     <button
       className={`tile ${isSelected ? "selected" : ""} ${
         isNetSelected ? "net-selected" : ""
-      } ${isPuzzleTile ? "puzzle" : ""}`}
-      onClick={onClick}
+      } ${isPuzzleTile ? "puzzle" : ""} ${hasError ? "error" : ""}`}
+      onClick={() => onClickEvent()}
     >
       {content}
     </button>

@@ -9,6 +9,7 @@ import {
   GameState,
   Puzzle,
   SolveHistory,
+  SolveResult,
   SolveState,
 } from "../utils/gameTypes";
 import GameWebSocket from "../utils/GameWebSocket";
@@ -25,21 +26,26 @@ import PuzzleInfo from "./PuzzleInfo";
  * replicate changes from other clients.
  */
 export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
-  // the current puzzle to solve
+  /** the current puzzle to solve */
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
 
-  // all current and previous solve states
+  /** all current and previous solve states */
   const [history, setHistory] = useState<SolveHistory>([
     SolveController.initialState(),
   ]);
 
-  // the current number of undos compared to the history, reset to 0 when state changes
+  /** is the puzzle completed? or are there any errors? */
+  const [solveResult, setSolveResult] = useState<SolveResult>(
+    SolveController.emptySolveResult()
+  );
+
+  /** the current number of undos compared to the history, reset to 0 when state changes */
   const [undoDepth, setUndoDepth] = useState(0);
 
-  // currently selected tile
+  /** currently selected tile */
   const [selection, setSelection] = useState<number | null>(null);
 
-  // current connection state
+  /** current connection state */
   const [netConnectionStatus, setNetConnectionStatus] =
     useState<NetConnectionStatus>("offline");
 
@@ -47,23 +53,24 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     setNetConnectionStatus(gameSocket.connectionStatus);
   }
 
-  // selection of other players online
+  /** selection of other players online */
   const [netSelection, setNetSelection] = useState<NetSelection>(new Map());
 
-  // controller for working with solve states
+  /** controller for working with solve states */
   const controller = puzzle
     ? new SolveController(puzzle, history, undoDepth)
     : null;
 
-  // the current bundled game state for passing around
+  /** the current bundled game state for passing around */
   const gameState: GameState = {
     puzzle: puzzle,
     history: history,
     solveState: controller ? controller.state() : null,
+    solveResult: solveResult,
     selection: selection,
   };
 
-  // combined network state, for passing to other components
+  /** combined network state, for passing to other components */
   const netState: NetState = {
     status: netConnectionStatus,
     selection: netSelection,
@@ -72,6 +79,11 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   /** Set the new solve state, adding it to the history. */
   function setSolveState(newState: SolveState) {
     setHistory([...history, newState]);
+
+    // update the solve result, aka check if the puzzle's completed!
+    if (puzzle && controller) {
+      setSolveResult(controller.checkSolve(newState, puzzle));
+    }
   }
 
   /** Called when user clicks the New puzzle button. */
@@ -94,12 +106,12 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
   /** Called when input is given from the numpad. */
   function onNumpadInput(value: number | undefined, isCandidate: boolean) {
-    if (!selection || !controller) {
+    if (selection == null || !controller) {
       return;
     }
     var newState = null;
 
-    if (value === undefined) {
+    if (value == null) {
       // clear current value or candidates.
       // regardless of candidate mode, always clear any value first
       // so that candidates aren't cleared invisibly
@@ -151,6 +163,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
         type: "game-state",
         puzzle: puzzle,
         history: history,
+        solveResult: solveResult,
         selection: selection,
       });
     }
@@ -173,6 +186,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       // receive all the new info
       setPuzzle(message.puzzle);
       setHistory(message.history);
+      setSolveResult(message.solveResult);
       setNetSelectionForUser(userMessage.userId, message.selection);
     }
 
@@ -198,6 +212,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   function setNewPuzzle(newPuzzle: Puzzle) {
     setPuzzle(newPuzzle);
     setHistory([SolveController.initialState(newPuzzle)]);
+    setSolveResult(SolveController.emptySolveResult());
     console.log(newPuzzle);
   }
 
