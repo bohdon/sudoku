@@ -1,4 +1,4 @@
-import { GameWebSocket } from "./utils/online";
+import GameWebSocket from "./utils/GameWebSocket";
 import Game from "./components/Game";
 
 import "./App.scss";

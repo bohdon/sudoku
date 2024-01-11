@@ -1,4 +1,4 @@
-import { TileSolveState } from "../utils/types";
+import { TileSolveState } from "../utils/gameTypes";
 
 interface TileProps {
   state: TileSolveState;

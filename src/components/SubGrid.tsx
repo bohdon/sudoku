@@ -1,5 +1,5 @@
-import { NetState } from "../utils/online";
-import { SolveController, SolveState } from "../utils/types";
+import { NetState } from "../utils/onlineTypes";
+import { SolveState } from "../utils/gameTypes";
 import Tile from "./Tile";
 
 interface SubGridProps {

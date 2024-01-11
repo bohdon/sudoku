@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { SolveState } from "../utils/types";
-import { NetState } from "../utils/online";
+import { SolveState } from "../utils/gameTypes";
+import { NetState } from "../utils/onlineTypes";
 import SubGrid from "./SubGrid";
 
 interface GridProps {

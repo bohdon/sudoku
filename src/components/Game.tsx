@@ -1,12 +1,13 @@
 import { useState } from "react";
 import {
-  GameWebSocket,
   NetConnectionStatus,
   NetSelection,
   NetState,
   UserMessage,
-} from "../utils/online";
-import { SolveController, SolveState, TileSolveState } from "../utils/types";
+} from "../utils/onlineTypes";
+import { SolveState } from "../utils/gameTypes";
+import GameWebSocket from "../utils/GameWebSocket";
+import SolveController from "../utils/SolveController";
 import Grid from "./Grid";
 import Numpad from "./Numpad";
 import NetStatus from "./NetStatus";
@@ -32,8 +33,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   const [netConnectionStatus, setNetConnectionStatus] =
     useState<NetConnectionStatus>("offline");
 
-  if (netConnectionStatus != gameSocket.connectionStatus)
-  {
+  if (netConnectionStatus != gameSocket.connectionStatus) {
     setNetConnectionStatus(gameSocket.connectionStatus);
   }
 

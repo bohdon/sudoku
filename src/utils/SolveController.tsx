@@ -1,21 +1,9 @@
-/** Properties for a single tile of a solution. */
-export interface TileSolveState {
-  /** The annotated candidate values for the tile. */
-  candidates: number[];
-  /** The chosen value for the tile. */
-  value: number | undefined;
-}
-
-/** Properties for all tiles of a solution. */
-export interface SolveState {
-  /** Solve state for all tiles. */
-  tiles: TileSolveState[];
-}
+import { SolveState, TileSolveState } from "./gameTypes";
 
 /**
  * A controller for modifying SolveStates.
  */
-export class SolveController {
+export default class SolveController {
   /** History of all solve states. */
   history: SolveState[];
 

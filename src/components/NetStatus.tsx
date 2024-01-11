@@ -1,4 +1,4 @@
-import { NetConnectionStatus, NetState } from "../utils/online";
+import { NetConnectionStatus, NetState } from "../utils/onlineTypes";
 
 interface NetStatusProps {
   netState: NetState;

@@ -1,46 +1,10 @@
-/**
- * Types and utils for online multiplayer.
- */
-
-/** The possible states of network connection. */
-export type NetConnectionStatus = "offline" | "connecting" | "online" | "error";
-
-/** A map of other player's selected tiles, by client id. */
-export type NetSelection = Map<string, number>;
-
-/** All state needed for online play. */
-export interface NetState {
-  /** State of network connection. */
-  status: NetConnectionStatus;
-
-  /** Current selection of all other clients. */
-  selection: NetSelection;
-}
-
-/** Type defining all possible game message payloads. */
-export type GameMessage =
-  // custom message
-  | { type: string }
-  // server has sent this client a new client id
-  | { type: "client-id" }
-  // another client has disconnected
-  | { type: "disconnect" }
-  // grid selection has changed
-  | { type: "selection"; tileId: number }
-  // the tile values have changed
-  | { type: "tile-value"; value: number };
-
-/**
- * Type defining the actual user messages that get sent, including
- * the client user id and the game message.
- */
-export type UserMessage = { userId: string; message: GameMessage };
+import { NetConnectionStatus, UserMessage } from "./onlineTypes";
 
 /**
  * A util for constructing a websocket to send and receive messages.
  * Handles tagging messages with a unique user id.
  */
-export class GameWebSocket {
+export default class GameWebSocket {
   /** The url to connect to the server. */
   url = "ws://localhost:8000";
 
