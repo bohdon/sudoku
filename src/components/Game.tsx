@@ -29,8 +29,13 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   const [selection, setSelection] = useState<number | undefined>();
 
   // current connection state
-  const [netConnectionState, setNetConnectionState] =
+  const [netConnectionStatus, setNetConnectionStatus] =
     useState<NetConnectionStatus>("offline");
+
+  if (netConnectionStatus != gameSocket.connectionStatus)
+  {
+    setNetConnectionStatus(gameSocket.connectionStatus);
+  }
 
   // selection of other players online
   const [netSelection, setNetSelection] = useState<NetSelection>(new Map());
@@ -43,7 +48,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
   // combined network state, for passing to other components
   const netState: NetState = {
-    status: netConnectionState,
+    status: netConnectionStatus,
     selection: netSelection,
   };
 
@@ -51,6 +56,10 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   function setSolveState(newState: SolveState) {
     setHistory([...history, newState]);
   }
+
+  gameSocket.onConnectionStatusChange = (newStatus: NetConnectionStatus) => {
+    setNetConnectionStatus(newStatus);
+  };
 
   gameSocket.onMessageEvent = (userMessage: UserMessage) => {
     let message: any = userMessage.message;

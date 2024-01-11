@@ -30,6 +30,7 @@ export default function Tile({
       const row = Math.trunc(idx / 3);
       return (
         <span
+          key={num}
           className={`num candidate text-base col-${col} row-${row}`}
           hidden={!candidates.includes(num)}
         >

@@ -3,7 +3,7 @@
  */
 
 /** The possible states of network connection. */
-export type NetConnectionStatus = "offline" | "connecting" | "online";
+export type NetConnectionStatus = "offline" | "connecting" | "online" | "error";
 
 /** A map of other player's selected tiles, by client id. */
 export type NetSelection = Map<string, number>;
@@ -50,10 +50,16 @@ export class GameWebSocket {
   /** The websocket connection to the server. */
   socket: WebSocket | null = null;
 
+  /** The current connection status. */
+  connectionStatus: NetConnectionStatus;
+
+  /** Called when the connection status has changed. */
+  onConnectionStatusChange = (newStatus: NetConnectionStatus) => {};
+
   /** Called when a UserMessage is received. */
   onMessageEvent = (message: UserMessage) => {};
 
-  constructor() {
+  constructor(autoConnect = true) {
     // listen for window visibility change, and refresh socket if its dead
     document.addEventListener("visibilitychange", (event) => {
       if (
@@ -66,8 +72,19 @@ export class GameWebSocket {
       }
     });
 
+    this.connectionStatus = "offline";
+
     // auto-create socket on construct
-    this.createSocket();
+    if (autoConnect) {
+      this.createSocket();
+    }
+  }
+
+  _setConnectionStatus(newStatus: NetConnectionStatus) {
+    if (this.connectionStatus != newStatus) {
+      this.connectionStatus = newStatus;
+      this.onConnectionStatusChange(newStatus);
+    }
   }
 
   /**
@@ -75,10 +92,12 @@ export class GameWebSocket {
    * The socket will only be stored once a connection is established.
    */
   createSocket() {
+    this._setConnectionStatus("connecting");
     console.log(`connecting to ${this.url}`);
     var newSocket = new WebSocket(this.url);
 
     newSocket.addEventListener("error", (event) => {
+      this._setConnectionStatus("error");
       console.log("socket error", event);
     });
 
@@ -86,7 +105,8 @@ export class GameWebSocket {
     newSocket.addEventListener("open", () => {
       // save the connected socket
       this.socket = newSocket;
-      console.log("socket open...");
+      this._setConnectionStatus("online");
+      console.log("connected...");
     });
 
     // handle message received
