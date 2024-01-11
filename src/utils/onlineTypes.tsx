@@ -2,13 +2,13 @@
  * Types and utils for online multiplayer.
  */
 
-import { Puzzle, TileSolveState } from "./gameTypes";
+import { Puzzle, SolveHistory, TileSolveState } from "./gameTypes";
 
 /** The possible states of network connection. */
 export type NetConnectionStatus = "offline" | "connecting" | "online" | "error";
 
 /** A map of other player's selected tiles, by client id. */
-export type NetSelection = Map<string, number>;
+export type NetSelection = Map<string, number | null>;
 
 /** All state needed for online play. */
 export interface NetState {
@@ -22,11 +22,21 @@ export interface NetState {
 /** Server has sent this client a new client id. */
 type ClientIdMessage = { type: "client-id" };
 
+/** Another client has joined */
+type ClientJoinMessage = { type: "client-join" };
+
 /** Another client has disconnected */
-type DisconnectMessage = { type: "disconnect" };
+type ClientLeaveMessage = { type: "client-leave" };
 
 /** A new puzzle has been generated */
 type NewPuzzleMessage = { type: "new-puzzle"; puzzle: Puzzle };
+
+type GameStateMessage = {
+  type: "game-state";
+  puzzle: Puzzle | null;
+  history: SolveHistory;
+  selection: number | null;
+};
 
 /** A tile state has changed */
 type TileStateMessage = {
@@ -41,8 +51,10 @@ type SelectionMessage = { type: "selection"; selection: number };
 /** Union of all possible types of online game messages. */
 export type GameMessage =
   | ClientIdMessage
-  | DisconnectMessage
+  | ClientJoinMessage
+  | ClientLeaveMessage
   | NewPuzzleMessage
+  | GameStateMessage
   | TileStateMessage
   | SelectionMessage;
 

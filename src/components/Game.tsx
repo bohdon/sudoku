@@ -127,6 +127,13 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     }
   }
 
+  /** Set the selected tile to display for another online user. */
+  function setNetSelectionForUser(clientId: string, selection: number | null) {
+    let newNetSelection = new Map(netSelection);
+    newNetSelection.set(clientId, selection);
+    setNetSelection(newNetSelection);
+  }
+
   /** Called when the online connection status changed. */
   gameSocket.onConnectionStatusChange = (newStatus: NetConnectionStatus) => {
     setNetConnectionStatus(newStatus);
@@ -137,8 +144,19 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     let message = userMessage.message;
     console.log(`message: ${message.type} from ${userMessage.userId}`);
 
-    if (message.type == "disconnect") {
-      // clear any tile selection
+    if (message.type == "client-join") {
+      // send the new client everything
+      // TODO: who's the host? don't send from everyone...
+      gameSocket?.send({
+        type: "game-state",
+        puzzle: puzzle,
+        history: history,
+        selection: selection,
+      });
+    }
+
+    if (message.type == "client-leave") {
+      // clear their tile selection
       if (netSelection?.has(userMessage.userId)) {
         let newNetSelection = new Map(netSelection);
         newNetSelection.delete(userMessage.userId);
@@ -149,6 +167,13 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     if (message.type == "new-puzzle") {
       // init game state with new puzzle
       setNewPuzzle(message.puzzle);
+    }
+
+    if (message.type == "game-state") {
+      // receive all the new info
+      setPuzzle(message.puzzle);
+      setHistory(message.history);
+      setNetSelectionForUser(userMessage.userId, message.selection);
     }
 
     if (message.type == "tile-state") {
@@ -166,9 +191,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
     if (message.type == "selection") {
       // store selected tile id by user id
-      let newNetSelection = new Map(netSelection);
-      newNetSelection.set(userMessage.userId, message.selection);
-      setNetSelection(newNetSelection);
+      setNetSelectionForUser(userMessage.userId, message.selection);
     }
   };
 
