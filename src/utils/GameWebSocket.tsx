@@ -1,3 +1,4 @@
+import { GameMessage } from "./onlineTypes";
 import { NetConnectionStatus, UserMessage } from "./onlineTypes";
 
 /**
@@ -90,7 +91,7 @@ export default class GameWebSocket {
   }
 
   /** Send a message to all other clients. */
-  send(message: any) {
+  send(message: GameMessage) {
     if (!this.userId) {
       // don't send messages without an id
       return;

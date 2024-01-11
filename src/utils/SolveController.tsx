@@ -95,6 +95,16 @@ export default class SolveController {
     return newState;
   }
 
+  /** Set the full state of a tile. */
+  setTileState(tileId: number, tileState: TileSolveState): SolveState | null {
+    if (!this.canModifyTile(tileId)) {
+      return null;
+    }
+    var newState = this.cloneState();
+    newState.tiles[tileId] = tileState;
+    return newState;
+  }
+
   /** Return true if there are any states to undo. */
   canUndo(): boolean {
     // can only undo up to 'last index - 1' of history

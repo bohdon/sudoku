@@ -74,29 +74,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     setHistory([...history, newState]);
   }
 
-  gameSocket.onConnectionStatusChange = (newStatus: NetConnectionStatus) => {
-    setNetConnectionStatus(newStatus);
-  };
-
-  gameSocket.onMessageEvent = (userMessage: UserMessage) => {
-    let message: any = userMessage.message;
-    console.log(`message: ${message.type} from ${userMessage.userId}`);
-
-    if (message.type == "selection") {
-      // store selected tile id by user id
-      let newNetSelection = new Map(netSelection);
-      newNetSelection.set(userMessage.userId, message.tileId);
-      setNetSelection(newNetSelection);
-    } else if (message.type == "disconnect") {
-      // clear any tile selection
-      if (netSelection?.has(userMessage.userId)) {
-        let newNetSelection = new Map(netSelection);
-        newNetSelection.delete(userMessage.userId);
-        setNetSelection(newNetSelection);
-      }
-    }
-  };
-
+  /** Called when user clicks the New puzzle button. */
   function onNewPuzzleClick() {
     if (puzzle && !confirm("Generate a new puzzle?")) {
       return;
@@ -104,17 +82,14 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
     var puzzleController = new PuzzleController();
     var newPuzzle = puzzleController.makePuzzle();
-    setPuzzle(newPuzzle);
-    setSolveState(SolveController.initialState(newPuzzle));
-    console.log(newPuzzle);
+    setNewPuzzle(newPuzzle);
+    gameSocket?.send({ type: "new-puzzle", puzzle: newPuzzle });
   }
 
+  /** Called when user selects a new tile. */
   function onGridSelectionChange(tileId: number) {
     setSelection(tileId);
-
-    if (gameSocket.socket) {
-      gameSocket.send({ type: "selection", tileId: tileId });
-    }
+    gameSocket?.send({ type: "selection", selection: tileId });
   }
 
   /** Called when input is given from the numpad. */
@@ -144,7 +119,63 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
     if (newState) {
       setSolveState(newState);
+      gameSocket?.send({
+        type: "tile-state",
+        tileId: selection,
+        tileState: newState.tiles[selection],
+      });
     }
+  }
+
+  /** Called when the online connection status changed. */
+  gameSocket.onConnectionStatusChange = (newStatus: NetConnectionStatus) => {
+    setNetConnectionStatus(newStatus);
+  };
+
+  /** Called when receiving a message from the game websocket. */
+  gameSocket.onMessageEvent = (userMessage: UserMessage) => {
+    let message = userMessage.message;
+    console.log(`message: ${message.type} from ${userMessage.userId}`);
+
+    if (message.type == "disconnect") {
+      // clear any tile selection
+      if (netSelection?.has(userMessage.userId)) {
+        let newNetSelection = new Map(netSelection);
+        newNetSelection.delete(userMessage.userId);
+        setNetSelection(newNetSelection);
+      }
+    }
+
+    if (message.type == "new-puzzle") {
+      // init game state with new puzzle
+      setNewPuzzle(message.puzzle);
+    }
+
+    if (message.type == "tile-state") {
+      // force-update the tile state for the updated tile
+      var newState = controller?.setTileState(
+        message.tileId,
+        message.tileState
+      );
+
+      // TODO: how do we ensure history states match?
+      if (newState) {
+        setSolveState(newState);
+      }
+    }
+
+    if (message.type == "selection") {
+      // store selected tile id by user id
+      let newNetSelection = new Map(netSelection);
+      newNetSelection.set(userMessage.userId, message.selection);
+      setNetSelection(newNetSelection);
+    }
+  };
+
+  function setNewPuzzle(newPuzzle: Puzzle) {
+    setPuzzle(newPuzzle);
+    setSolveState(SolveController.initialState(newPuzzle));
+    console.log(newPuzzle);
   }
 
   return (

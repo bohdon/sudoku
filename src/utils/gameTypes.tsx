@@ -36,16 +36,3 @@ export interface GameState {
   /** The currently selected tile. */
   selection: number | null;
 }
-
-/** Type defining all possible game message payloads. */
-export type GameMessage =
-  // custom message
-  | { type: string }
-  // server has sent this client a new client id
-  | { type: "client-id" }
-  // another client has disconnected
-  | { type: "disconnect" }
-  // grid selection has changed
-  | { type: "selection"; tileId: number }
-  // the tile values have changed
-  | { type: "tile-value"; value: number };
