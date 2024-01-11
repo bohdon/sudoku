@@ -17,6 +17,7 @@ import Grid from "./Grid";
 import Numpad from "./Numpad";
 import NetStatus from "./NetStatus";
 import PuzzleController from "../utils/PuzzleMaker";
+import PuzzleInfo from "./PuzzleInfo";
 
 /**
  * The main game mode and state. Contains the generated puzzle as well
@@ -151,9 +152,12 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       <div className="play-area">
         <div className="columns">
           <div className="column box">
-            <button className="box btn" onClick={onNewPuzzleClick}>
-              New
-            </button>
+            <div>
+              <button className="box btn" onClick={onNewPuzzleClick}>
+                New
+              </button>
+              {puzzle != null ? <PuzzleInfo gameState={gameState} /> : null}
+            </div>
             <Grid
               gameState={gameState}
               netState={netState}
