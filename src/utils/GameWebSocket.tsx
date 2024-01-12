@@ -7,7 +7,7 @@ import { NetConnectionStatus, UserMessage } from "./onlineTypes";
  */
 export default class GameWebSocket {
   /** The url to connect to the server. */
-  url = "ws://localhost:8000";
+  url = "ws://play.bohdon.com:8000";
 
   /** The unique id of this user/client, given by the server. */
   userId: string | null = null;
