@@ -7,7 +7,7 @@ import { NetConnectionStatus, UserMessage } from "./onlineTypes";
  */
 export default class GameWebSocket {
   /** The url to connect to the server. */
-  url = "ws://play.bohdon.com:8000";
+  url: string = "ws://play.bohdon.com:8000";
 
   /** The unique id of this user/client, given by the server. */
   userId: string | null = null;
@@ -25,6 +25,13 @@ export default class GameWebSocket {
   onMessageEvent = (message: UserMessage) => {};
 
   constructor(autoConnect = true) {
+    if (
+      process.env.NODE_ENV == "development" &&
+      process.env.REACT_APP_SERVER_URL
+    ) {
+      this.url = process.env.REACT_APP_SERVER_URL;
+    }
+
     // listen for window visibility change, and refresh socket if its dead
     document.addEventListener("visibilitychange", (event) => {
       if (
@@ -58,7 +65,9 @@ export default class GameWebSocket {
    */
   createSocket() {
     this._setConnectionStatus("connecting");
-    console.log(`connecting to ${this.url}`);
+    if (process.env.NODE_ENV == "development") {
+      console.log(`connecting to ${this.url}`);
+    }
     var newSocket = new WebSocket(this.url);
 
     newSocket.addEventListener("error", (event) => {
