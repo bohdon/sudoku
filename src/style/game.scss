@@ -38,7 +38,7 @@ $completed-bg-color: hsla(156, 50%, 54%, 0.04);
   }
 
   .sub-grid {
-    border: 1px solid $grid-color;
+    border: 2px solid $grid-color;
   }
 
   .grid-col-3 {
@@ -149,25 +149,27 @@ $completed-bg-color: hsla(156, 50%, 54%, 0.04);
       background-color: $completed-bg-color;
       border-color: $completed-color;
       animation: ani-board-flash 2s ease-in-out 0.15s 1 forwards;
-      transition: all 1s ease-in-out 2s;
+      transition: border-color 1s ease-in-out 2s;
+      transition: background-color 1s ease-in-out 2s;
 
       .sub-grid {
         color: $completed-color;
         border-color: $completed-color;
-        transition: all 0.5s ease-in-out 1s;
+        transition: color 0.5s ease-in-out 1s;
+        transition: border-color 0.5s ease-in-out 1s;
       }
 
       .tile {
         color: $completed-color;
         border-color: $completed-color;
         background: transparent;
-        transition: all 0.25s ease-in-out 0s;
+        transition: color 0.25s ease-in-out 0s;
       }
     }
 
     .puzzle-info {
       color: $completed-color;
-      transition: all 0.5s ease-in-out 1s;
+      transition: color 0.5s ease-in-out 1s;
     }
   }
 }
