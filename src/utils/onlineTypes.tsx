@@ -8,7 +8,7 @@ import { Puzzle, SolveHistory, SolveResult, TileSolveState } from "./gameTypes";
 export type NetConnectionStatus = "offline" | "connecting" | "online" | "error";
 
 /** A map of other player's selected tiles, by client id. */
-export type NetSelection = Map<string, number | null>;
+export type NetSelection = Map<string, number | undefined>;
 
 /** All state needed for online play. */
 export interface NetState {
@@ -19,7 +19,7 @@ export interface NetState {
   userSelection: NetSelection;
 
   /** Flat list of all other selected tile ids. */
-  selection: (number | null)[];
+  selection: (number | undefined)[];
 }
 
 /** Server has sent this client a new client id. */
@@ -40,11 +40,11 @@ type NewPuzzleMessage = {
 
 type GameStateMessage = {
   type: "game-state";
-  puzzle: Puzzle | null;
-  startTimeStr: string | null;
+  puzzle?: Puzzle;
+  startTimeStr?: string;
   history: SolveHistory;
   solveResult: SolveResult;
-  selection: number | null;
+  selection?: number;
 };
 
 /** A tile state has changed */

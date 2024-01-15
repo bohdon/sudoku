@@ -6,12 +6,8 @@ import GameWebSocket from "./GameWebSocket";
 export const ThemeContext = createContext("dark");
 
 export const GameStateContext = createContext<GameState>({
-  puzzle: null,
-  startTime: null,
   history: [],
-  selection: null,
   solveResult: { isCompleted: false, errors: [] },
-  solveState: null,
 });
 
 export const NetStateContext = createContext<NetState>({
@@ -20,4 +16,6 @@ export const NetStateContext = createContext<NetState>({
   selection: [],
 });
 
-export const OnlineGameContext = createContext<GameWebSocket | null>(null);
+export const OnlineGameContext = createContext<GameWebSocket | undefined>(
+  undefined
+);

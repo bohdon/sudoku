@@ -47,7 +47,7 @@ export default class SolveController {
   }
 
   /** Set the value of a tile and return a new solve state */
-  setValue(tileId: number, value: number | null): SolveState | null {
+  setValue(tileId: number, value: number | undefined): SolveState | null {
     if (!this.canModifyTile(tileId)) {
       return null;
     }
@@ -62,7 +62,7 @@ export default class SolveController {
       return null;
     }
     var newState = this.cloneState();
-    newState.tiles[tileId].value = null;
+    newState.tiles[tileId].value = undefined;
     return newState;
   }
 
@@ -141,11 +141,12 @@ export default class SolveController {
   }
 
   /** Return an initial solve state with the puzzle tiles filled in. */
-  static initialState(puzzle: Puzzle | null = null): SolveState {
+  static initialState(puzzle?: Puzzle): SolveState {
     var tiles = Array<TileSolveState>(81);
     for (let i = 0; i < tiles.length; i++) {
+      const value = puzzle?.tiles[i];
       tiles[i] = {
-        value: puzzle ? puzzle.tiles[i] : null,
+        value: value !== undefined && value !== null ? value : undefined,
         candidates: [],
       };
     }

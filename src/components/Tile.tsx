@@ -7,7 +7,7 @@ interface TileProps {
   tileId: number;
 
   /** The solve state of the tile. */
-  state: TileSolveState | null;
+  state?: TileSolveState;
 
   /** The function to call when the tile is clicked. */
   onClickEvent: () => void;

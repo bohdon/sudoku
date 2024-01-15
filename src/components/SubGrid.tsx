@@ -17,7 +17,7 @@ export default function SubGrid({ tileIds, onTileClick }: SubGridProps) {
   const tiles = tileIds.map((tileId) => {
     const tileState = gameState.solveState
       ? gameState.solveState.tiles[tileId]
-      : null;
+      : undefined;
 
     return (
       <Tile

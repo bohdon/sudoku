@@ -34,10 +34,10 @@ export default function Game({}) {
   const gameSocket = useContext(OnlineGameContext);
 
   /** the current puzzle to solve */
-  const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+  const [puzzle, setPuzzle] = useState<Puzzle>();
 
   /** The global time when the puzzle solve started. */
-  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [startTime, setStartTime] = useState<Date>();
 
   /** all current and previous solve states */
   const [history, setHistory] = useState<SolveHistory>([
@@ -53,7 +53,7 @@ export default function Game({}) {
   const [undoDepth, setUndoDepth] = useState(0);
 
   /** currently selected tile */
-  const [selection, setSelection] = useState<number | null>(null);
+  const [selection, setSelection] = useState<number>();
 
   /** current connection state */
   const [netConnectionStatus, setNetConnectionStatus] =
@@ -69,14 +69,14 @@ export default function Game({}) {
   /** controller for working with solve states */
   const controller = puzzle
     ? new SolveController(puzzle, history, undoDepth)
-    : null;
+    : undefined;
 
   /** the current bundled game state for passing around */
   const gameState: GameState = {
     puzzle: puzzle,
     startTime: startTime,
     history: history,
-    solveState: controller ? controller.state() : null,
+    solveState: controller?.state(),
     solveResult: solveResult,
     selection: selection,
   };
@@ -122,13 +122,13 @@ export default function Game({}) {
   }
 
   /** Called when input is given from the numpad. */
-  function onNumpadInput(value: number | undefined, isCandidate: boolean) {
-    if (selection == null || !controller) {
+  function onNumpadInput(value: number | null, isCandidate: boolean) {
+    if (selection === undefined || !controller) {
       return;
     }
     var newState = null;
 
-    if (value == null) {
+    if (value === null) {
       // clear current value or candidates.
       // regardless of candidate mode, always clear any value first
       // so that candidates aren't cleared invisibly
@@ -157,7 +157,10 @@ export default function Game({}) {
   }
 
   /** Set the selected tile to display for another online user. */
-  function setNetSelectionForUser(clientId: string, selection: number | null) {
+  function setNetSelectionForUser(
+    clientId: string,
+    selection: number | undefined
+  ) {
     let newNetSelection = new Map(netSelection);
     newNetSelection.set(clientId, selection);
     setNetSelection(newNetSelection);
@@ -179,7 +182,7 @@ export default function Game({}) {
       gameSocket?.send({
         type: "game-state",
         puzzle: puzzle,
-        startTimeStr: startTime ? startTime.toISOString() : null,
+        startTimeStr: startTime?.toISOString(),
         history: history,
         solveResult: solveResult,
         selection: selection,
@@ -204,7 +207,7 @@ export default function Game({}) {
       // receive all the new info
       setPuzzle(message.puzzle);
       setStartTime(
-        message.startTimeStr ? new Date(message.startTimeStr) : null
+        message.startTimeStr ? new Date(message.startTimeStr) : undefined
       );
       setHistory(message.history);
       setSolveResult(message.solveResult);

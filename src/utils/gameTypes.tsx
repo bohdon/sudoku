@@ -23,7 +23,7 @@ export interface TileSolveState {
   candidates: number[];
 
   /** The chosen value for the tile. */
-  value: number | null;
+  value?: number;
 }
 
 /** Properties for all tiles of a solution. */
@@ -46,20 +46,20 @@ export interface SolveResult {
 /** A bundled representing of all game state for passing around. */
 export interface GameState {
   /** The puzzle to solve. */
-  puzzle: Puzzle | null;
+  puzzle?: Puzzle;
 
   /** The time when the puzzle was started. */
-  startTime: Date | null;
+  startTime?: Date;
 
   /** The full history of solve states. */
   history: SolveHistory;
 
   /** The currently displayed solve state. */
-  solveState: SolveState | null;
+  solveState?: SolveState;
 
   /** The current solution result, e.g. is the puzzle solved and any current errors. */
   solveResult: SolveResult;
 
   /** The currently selected tile. */
-  selection: number | null;
+  selection?: number;
 }

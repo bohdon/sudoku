@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { GameStateContext } from "../utils/Contexts";
 
 interface NumpadProps {
-  onInput: (value: number | undefined, isCandidate: boolean) => void;
+  onInput: (value: number | null, isCandidate: boolean) => void;
 }
 
 export default function Numpad({ onInput }: NumpadProps) {
@@ -21,7 +21,7 @@ export default function Numpad({ onInput }: NumpadProps) {
   }
 
   function onClearClick() {
-    onInput(undefined, isCandidate);
+    onInput(null, isCandidate);
   }
 
   const numberButtons = numbers.map((num) => {

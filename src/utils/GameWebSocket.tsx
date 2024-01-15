@@ -10,10 +10,10 @@ export default class GameWebSocket {
   url: string = "ws://play.bohdon.com:8000";
 
   /** The unique id of this user/client, given by the server. */
-  userId: string | null = null;
+  userId?: string;
 
   /** The websocket connection to the server. */
-  socket: WebSocket | null = null;
+  socket?: WebSocket;
 
   /** The current connection status. */
   connectionStatus: NetConnectionStatus;
