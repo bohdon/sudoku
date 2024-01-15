@@ -225,6 +225,13 @@ export default function Game({}) {
       setNewPuzzle(message.puzzle, new Date(message.startTimeStr));
     }
 
+    if (message.type == "solve-state") {
+      // receive an entire solve state
+      if (message.solveState) {
+        setSolveState(message.solveState);
+      }
+    }
+
     if (message.type == "game-state") {
       // receive all the new info
       setPuzzle(message.puzzle);
@@ -269,6 +276,11 @@ export default function Game({}) {
       var newState = controller.autoFillCandidates();
       if (newState) {
         setSolveState(newState);
+        // send the new full solve state
+        gameSocket?.send({
+          type: "solve-state",
+          solveState: newState,
+        });
       }
     }
   }
