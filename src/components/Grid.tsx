@@ -37,13 +37,5 @@ export default function Grid({ onSelectionChange }: GridProps) {
     return <SubGrid key={idx} tileIds={element} onTileClick={onTileClick} />;
   });
 
-  return (
-    <div
-      className={`grid main-grid grid-col-3 grid-row-3 ${
-        isCompleted ? "completed" : ""
-      }`}
-    >
-      {subGrids}
-    </div>
-  );
+  return <div className="grid main-grid grid-col-3 grid-row-3">{subGrids}</div>;
 }

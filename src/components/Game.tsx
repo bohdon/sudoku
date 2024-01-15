@@ -40,6 +40,9 @@ export default function Game({}) {
   /** The global time when the puzzle solve started. */
   const [startTime, setStartTime] = useState<Date>();
 
+  /** The global time when the puzzle was completed. */
+  const [endTime, setEndTime] = useState<Date>();
+
   /** all current and previous solve states */
   const [history, setHistory] = useState<SolveHistory>([]);
 
@@ -70,10 +73,15 @@ export default function Game({}) {
     ? new SolveController(puzzle, history, undoDepth)
     : undefined;
 
+  const canAutoFill = history.length == 1;
+
+  const isCompleted = solveResult.isCompleted;
+
   /** the current bundled game state for passing around */
   const gameState: GameState = {
     puzzle: puzzle,
     startTime: startTime,
+    endTime: endTime,
     history: history,
     solveState: controller?.state(),
     solveResult: solveResult,
@@ -89,11 +97,22 @@ export default function Game({}) {
 
   /** Set the new solve state, adding it to the history. */
   function setSolveState(newState: SolveState) {
+    // cant modify completed puzzle, only start a new one
+    if (isCompleted) {
+      return;
+    }
+
     setHistory([...history, newState]);
 
     // update the solve result, aka check if the puzzle's completed!
     if (puzzle && controller) {
-      setSolveResult(controller.checkSolve(newState, puzzle));
+      var newSolveResult = controller.checkSolve(newState, puzzle);
+      setSolveResult(newSolveResult);
+
+      // record completed time
+      if (newSolveResult.isCompleted) {
+        setEndTime(new Date());
+      }
     }
   }
 
@@ -185,6 +204,7 @@ export default function Game({}) {
         type: "game-state",
         puzzle: puzzle,
         startTimeStr: startTime?.toISOString(),
+        endTimeStr: endTime?.toISOString(),
         history: history,
         solveResult: solveResult,
         selection: selection,
@@ -211,6 +231,7 @@ export default function Game({}) {
       setStartTime(
         message.startTimeStr ? new Date(message.startTimeStr) : undefined
       );
+      setEndTime(message.endTimeStr ? new Date(message.endTimeStr) : undefined);
       setHistory(message.history);
       setSolveResult(message.solveResult);
       setNetSelectionForUser(userMessage.userId, message.selection);
@@ -240,9 +261,8 @@ export default function Game({}) {
     setHistory([SolveController.initialState(newPuzzle)]);
     setSolveResult(SolveController.emptySolveResult());
     setStartTime(startTime);
+    setEndTime(undefined);
   }
-
-  const canAutoFill = history.length == 1;
 
   function autoFillCandidates() {
     if (controller) {
@@ -258,7 +278,7 @@ export default function Game({}) {
   return (
     <NetStateContext.Provider value={netState}>
       <GameStateContext.Provider value={gameState}>
-        <div className="su-game play-area">
+        <div className={`su-game play-area ${isCompleted ? "completed" : ""}`}>
           <div className="play-area">
             <div className="columns wrap">
               <div className="column box">

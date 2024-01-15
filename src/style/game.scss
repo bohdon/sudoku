@@ -144,23 +144,30 @@ $completed-bg-color: hsla(156, 50%, 54%, 0.04);
     }
   }
 
-  .main-grid.completed {
-    background-color: $completed-bg-color;
-    border-color: $completed-color;
-    animation: ani-board-flash 2s ease-in-out 0.15s 1 forwards;
-    transition: all 1s ease-in-out 2s;
-
-    .sub-grid {
-      color: $completed-color;
+  &.completed {
+    .main-grid {
+      background-color: $completed-bg-color;
       border-color: $completed-color;
-      transition: all 0.5s ease-in-out 1s;
+      animation: ani-board-flash 2s ease-in-out 0.15s 1 forwards;
+      transition: all 1s ease-in-out 2s;
+
+      .sub-grid {
+        color: $completed-color;
+        border-color: $completed-color;
+        transition: all 0.5s ease-in-out 1s;
+      }
+
+      .tile {
+        color: $completed-color;
+        border-color: $completed-color;
+        background: transparent;
+        transition: all 0.25s ease-in-out 0s;
+      }
     }
 
-    .tile {
+    .puzzle-info {
       color: $completed-color;
-      border-color: $completed-color;
-      background: transparent;
-      transition: all 0.25s ease-in-out 0s;
+      transition: all 0.5s ease-in-out 1s;
     }
   }
 }

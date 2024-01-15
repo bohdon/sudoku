@@ -11,11 +11,13 @@ export default function Timer({}) {
   const startTime = gameState.startTime;
 
   /** The current time, updated every interval. */
-  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+  const endTime = gameState.endTime ?? currentTime;
 
   /** Elapsed time since starting in milliseconds. */
   const elapsedTime = startTime
-    ? Math.max(currentTime - startTime.getTime(), 0)
+    ? Math.max(endTime.getTime() - startTime.getTime(), 0)
     : 0;
 
   const elapsedTimeStr = formatTimeSpan(elapsedTime);
@@ -24,7 +26,7 @@ export default function Timer({}) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(Date.now());
+      setCurrentTime(new Date());
     }, updateInterval);
 
     return () => {

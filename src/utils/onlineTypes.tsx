@@ -42,6 +42,7 @@ type GameStateMessage = {
   type: "game-state";
   puzzle?: Puzzle;
   startTimeStr?: string;
+  endTimeStr?: string;
   history: SolveHistory;
   solveResult: SolveResult;
   selection?: number;

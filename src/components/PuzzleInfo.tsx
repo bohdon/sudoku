@@ -22,7 +22,7 @@ export default function PuzzleInfo({}) {
   }
 
   return (
-    <span className="text-lg">
+    <span className="puzzle-info text-lg">
       <span>Difficulty {gameState.puzzle?.difficulty}</span>
       <span> | </span>
       <GameTimer />
