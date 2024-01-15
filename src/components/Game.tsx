@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   NetConnectionStatus,
   NetSelection,
@@ -12,21 +12,27 @@ import {
   SolveResult,
   SolveState,
 } from "../utils/gameTypes";
-import GameWebSocket from "../utils/GameWebSocket";
 import SolveController from "../utils/SolveController";
+import {
+  GameStateContext,
+  NetStateContext,
+  OnlineGameContext,
+} from "../utils/Contexts";
 import Grid from "./Grid";
 import Numpad from "./Numpad";
 import NetStatus from "./NetStatus";
 import PuzzleController from "../utils/PuzzleMaker";
 import PuzzleInfo from "./PuzzleInfo";
-import Timer from "./Timer";
+import Timer from "./GameTimer";
 
 /**
  * The main game mode and state. Contains the generated puzzle as well
  * as the current and all previous solve states. Uses GameWebSocket to
  * replicate changes from other clients.
  */
-export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
+export default function Game({}) {
+  const gameSocket = useContext(OnlineGameContext);
+
   /** the current puzzle to solve */
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
 
@@ -53,8 +59,8 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   const [netConnectionStatus, setNetConnectionStatus] =
     useState<NetConnectionStatus>("offline");
 
-  if (netConnectionStatus != gameSocket.connectionStatus) {
-    setNetConnectionStatus(gameSocket.connectionStatus);
+  if (netConnectionStatus != gameSocket!.connectionStatus) {
+    setNetConnectionStatus(gameSocket!.connectionStatus);
   }
 
   /** selection of other players online */
@@ -68,6 +74,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   /** the current bundled game state for passing around */
   const gameState: GameState = {
     puzzle: puzzle,
+    startTime: startTime,
     history: history,
     solveState: controller ? controller.state() : null,
     solveResult: solveResult,
@@ -77,7 +84,8 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   /** combined network state, for passing to other components */
   const netState: NetState = {
     status: netConnectionStatus,
-    selection: netSelection,
+    selection: Array.from(netSelection.values()),
+    userSelection: netSelection,
   };
 
   /** Set the new solve state, adding it to the history. */
@@ -156,12 +164,12 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   }
 
   /** Called when the online connection status changed. */
-  gameSocket.onConnectionStatusChange = (newStatus: NetConnectionStatus) => {
+  gameSocket!.onConnectionStatusChange = (newStatus: NetConnectionStatus) => {
     setNetConnectionStatus(newStatus);
   };
 
   /** Called when receiving a message from the game websocket. */
-  gameSocket.onMessageEvent = (userMessage: UserMessage) => {
+  gameSocket!.onMessageEvent = (userMessage: UserMessage) => {
     let message = userMessage.message;
     console.log(`message: ${message.type} from ${userMessage.userId}`);
 
@@ -230,33 +238,32 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   }
 
   return (
-    <div className="su-game play-area">
-      <div className="play-area">
-        <div className="columns wrap">
-          <div className="column box">
-            <div className="box flex">
-              <button className="btn" onClick={onNewPuzzleClick}>
-                New
-              </button>
-              <span className="align-center">
-                <Timer startTime={startTime} />
-              </span>
-              <span className="align-right">
-                {puzzle != null ? <PuzzleInfo gameState={gameState} /> : null}
-                <NetStatus netState={netState} />
-              </span>
+    <NetStateContext.Provider value={netState}>
+      <GameStateContext.Provider value={gameState}>
+        <div className="su-game play-area">
+          <div className="play-area">
+            <div className="columns wrap">
+              <div className="column box">
+                <div className="box flex">
+                  <button className="btn" onClick={onNewPuzzleClick}>
+                    New
+                  </button>
+                  <span className="align-center">
+                    <PuzzleInfo />
+                  </span>
+                  <span className="align-right">
+                    <NetStatus />
+                  </span>
+                </div>
+                <Grid onSelectionChange={onGridSelectionChange} />
+              </div>
+              <div className="column box centered">
+                <Numpad onInput={onNumpadInput} />
+              </div>
             </div>
-            <Grid
-              gameState={gameState}
-              netState={netState}
-              onSelectionChange={onGridSelectionChange}
-            />
-          </div>
-          <div className="column box centered">
-            <Numpad isEnabled={puzzle != null} onInput={onNumpadInput} />
           </div>
         </div>
-      </div>
-    </div>
+      </GameStateContext.Provider>
+    </NetStateContext.Provider>
   );
 }

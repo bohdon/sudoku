@@ -48,6 +48,9 @@ export interface GameState {
   /** The puzzle to solve. */
   puzzle: Puzzle | null;
 
+  /** The time when the puzzle was started. */
+  startTime: Date | null;
+
   /** The full history of solve states. */
   history: SolveHistory;
 

@@ -15,8 +15,11 @@ export interface NetState {
   /** State of network connection. */
   status: NetConnectionStatus;
 
-  /** Current selection of all other clients. */
-  selection: NetSelection;
+  /** Current selection of other clients, by client id. */
+  userSelection: NetSelection;
+
+  /** Flat list of all other selected tile ids. */
+  selection: (number | null)[];
 }
 
 /** Server has sent this client a new client id. */

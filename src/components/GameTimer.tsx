@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { formatTimeSpan } from "../utils/time";
-
-interface TimerProps {
-  startTime: Date | null;
-}
+import { GameStateContext } from "../utils/Contexts";
 
 /**
  * Displays the elapsed since the puzzle started.
  */
-export default function Timer({ startTime }: TimerProps) {
+export default function Timer({}) {
+  const gameState = useContext(GameStateContext);
+
+  const startTime = gameState.startTime;
+
   /** The current time, updated every interval. */
   const [currentTime, setCurrentTime] = useState<number>(0);
 
@@ -32,8 +33,8 @@ export default function Timer({ startTime }: TimerProps) {
   }, [elapsedTime]);
 
   return (
-    <div className="text-2xl" hidden={startTime == null}>
+    <span className="" hidden={startTime == null}>
       {elapsedTimeStr}
-    </div>
+    </span>
   );
 }

@@ -1,3 +1,4 @@
+import { OnlineGameContext } from "./utils/Contexts";
 import GameWebSocket from "./utils/GameWebSocket";
 import Game from "./components/Game";
 
@@ -7,5 +8,9 @@ import "./App.scss";
 var gameSocket = new GameWebSocket();
 
 export default function App() {
-  return <Game gameSocket={gameSocket} />;
+  return (
+    <OnlineGameContext.Provider value={gameSocket}>
+      <Game />
+    </OnlineGameContext.Provider>
+  );
 }

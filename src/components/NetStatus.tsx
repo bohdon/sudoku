@@ -1,10 +1,10 @@
+import { useContext } from "react";
 import { NetConnectionStatus, NetState } from "../utils/onlineTypes";
+import { NetStateContext } from "../utils/Contexts";
 
-interface NetStatusProps {
-  netState: NetState;
-}
+export default function NetStatus({}) {
+  const netState = useContext(NetStateContext);
 
-export default function NetStatus({ netState }: NetStatusProps) {
   function cssClassForStatus(status: NetConnectionStatus): string {
     if (status == "offline") {
       return "";
@@ -16,7 +16,6 @@ export default function NetStatus({ netState }: NetStatusProps) {
     return "";
   }
 
-  const className = netState;
   return (
     <span className={`net-status badge ${cssClassForStatus(netState.status)}`}>
       {netState.status}

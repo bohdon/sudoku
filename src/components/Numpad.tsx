@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { GameStateContext } from "../utils/Contexts";
 
 interface NumpadProps {
-  isEnabled: boolean;
   onInput: (value: number | undefined, isCandidate: boolean) => void;
 }
 
-export default function Numpad({ isEnabled, onInput }: NumpadProps) {
+export default function Numpad({ onInput }: NumpadProps) {
+  const gameState = useContext(GameStateContext);
+
+  /** Is the numpad enabled? false when there's no puzzle. */
+  const isEnabled = gameState.puzzle != null;
+
   /** Is the user inputting candidates, or a chosen value? */
   const [isCandidate, setIsCandidate] = useState(false);
+
   const numbers = Array.from(Array(9).keys()).map((elem) => elem + 1);
 
   function onNumClick(value: number) {

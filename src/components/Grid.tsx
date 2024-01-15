@@ -1,25 +1,18 @@
+import { useContext } from "react";
 import { tileIdToBlockId } from "../utils/PuzzleMaker";
-import { GameState } from "../utils/gameTypes";
-import { NetState } from "../utils/onlineTypes";
 import SubGrid from "./SubGrid";
+import { GameStateContext, NetStateContext } from "../utils/Contexts";
 
 interface GridProps {
-  /** The current puzzle, solve state, selection. */
-  gameState: GameState;
-
-  /** The current net state */
-  netState: NetState;
-
   /** Called when the selection has changed by clicking on the grid. */
   onSelectionChange: (tileId: number) => void;
 }
 
 /** A 3x3 grid of SubGrids, each containing a 3x3 grid of tiles. */
-export default function Grid({
-  gameState,
-  netState,
-  onSelectionChange,
-}: GridProps) {
+export default function Grid({ onSelectionChange }: GridProps) {
+  const netState = useContext(NetStateContext);
+  const gameState = useContext(GameStateContext);
+
   var subGridTileIds = Array(9)
     .fill(null)
     .map((elem): number[] => []);
@@ -41,15 +34,7 @@ export default function Grid({
   const isCompleted = gameState.solveResult.isCompleted;
 
   const subGrids = subGridTileIds.map((element, idx) => {
-    return (
-      <SubGrid
-        key={idx}
-        tileIds={element}
-        gameState={gameState}
-        netState={netState}
-        onTileClick={onTileClick}
-      />
-    );
+    return <SubGrid key={idx} tileIds={element} onTileClick={onTileClick} />;
   });
 
   return (
