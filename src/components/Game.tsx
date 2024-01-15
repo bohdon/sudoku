@@ -24,6 +24,7 @@ import NetStatus from "./NetStatus";
 import PuzzleController from "../utils/PuzzleMaker";
 import PuzzleInfo from "./PuzzleInfo";
 import Timer from "./GameTimer";
+import { useHotkeys } from "react-hotkeys-hook";
 
 /**
  * The main game mode and state. Contains the generated puzzle as well
@@ -243,6 +244,8 @@ export default function Game({}) {
     setStartTime(startTime);
   }
 
+  useHotkeys("shift+n", () => onNewPuzzleClick());
+
   return (
     <NetStateContext.Provider value={netState}>
       <GameStateContext.Provider value={gameState}>
@@ -251,7 +254,10 @@ export default function Game({}) {
             <div className="columns wrap">
               <div className="column box">
                 <div className="box flex">
-                  <button className="btn" onClick={onNewPuzzleClick}>
+                  <button
+                    className={`btn ${puzzle ? "" : "info"}`}
+                    onClick={onNewPuzzleClick}
+                  >
                     New
                   </button>
                   <span className="align-center">
