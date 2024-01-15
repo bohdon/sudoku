@@ -7,5 +7,12 @@ module.exports = {
       instances: "1",
       exec_mode: "fork",
     },
+    {
+      name: "sudoku-server",
+      script: "npm",
+      args: "--prefix ../sudoku-server run prod",
+      instances: "1",
+      exec_mode: "fork",
+    },
   ],
 };
