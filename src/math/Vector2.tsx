@@ -10,6 +10,10 @@ export class Vector2 {
     this.y = y;
   }
 
+  toString(): string {
+    return `(${this.x}, ${this.y})`;
+  }
+
   setX(x: number): this {
     this.x = x;
     return this;

@@ -12,6 +12,10 @@ button {
 
 // common css components
 
+.hidden {
+  opacity: 0;
+}
+
 .disabled {
   opacity: 0.25;
 }
@@ -99,6 +103,10 @@ button {
 .align-right {
   position: absolute;
   right: 0px;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .box {

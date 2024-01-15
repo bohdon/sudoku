@@ -75,24 +75,27 @@ export default function Numpad({ onInput }: NumpadProps) {
       </button>
     );
   });
+
   return (
-    <div className={`numpad grid grid-col-3 ${isEnabled ? "" : "disabled"}`}>
-      {numberButtons}
-      <button className="btn" onClick={onClearClick}>
-        <span className="num-lg">X</span>
-      </button>
-      <button
-        className={`btn ${isCandidate ? "dimmed" : "selected"}`}
-        onClick={() => setIsCandidate(false)}
-      >
-        <span className="num-lg">#</span>
-      </button>
-      <button
-        className={`btn ${isCandidate ? "selected" : "dimmed"}`}
-        onClick={() => setIsCandidate(true)}
-      >
-        <span className="num-sm">#</span>
-      </button>
+    <div className={`${isEnabled ? "" : "disabled"}`}>
+      <div className={`numpad grid grid-col-3 `}>
+        {numberButtons}
+        <button className="btn" onClick={onClearClick}>
+          <span className="num-lg">X</span>
+        </button>
+        <button
+          className={`btn ${isCandidate ? "dimmed" : "selected"}`}
+          onClick={() => setIsCandidate(false)}
+        >
+          <span className="num-lg">#</span>
+        </button>
+        <button
+          className={`btn ${isCandidate ? "selected" : "dimmed"}`}
+          onClick={() => setIsCandidate(true)}
+        >
+          <span className="num-sm">#</span>
+        </button>
+      </div>
     </div>
   );
 }

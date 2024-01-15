@@ -41,9 +41,7 @@ export default function Game({}) {
   const [startTime, setStartTime] = useState<Date>();
 
   /** all current and previous solve states */
-  const [history, setHistory] = useState<SolveHistory>([
-    SolveController.initialState(),
-  ]);
+  const [history, setHistory] = useState<SolveHistory>([]);
 
   /** is the puzzle completed? or are there any errors? */
   const [solveResult, setSolveResult] = useState<SolveResult>(
@@ -244,6 +242,17 @@ export default function Game({}) {
     setStartTime(startTime);
   }
 
+  const canAutoFill = history.length == 1;
+
+  function autoFillCandidates() {
+    if (controller) {
+      var newState = controller.autoFillCandidates();
+      if (newState) {
+        setSolveState(newState);
+      }
+    }
+  }
+
   useHotkeys("shift+n", () => onNewPuzzleClick());
 
   return (
@@ -260,6 +269,13 @@ export default function Game({}) {
                   >
                     New
                   </button>
+                  {canAutoFill ? (
+                    <button className="btn" onClick={autoFillCandidates}>
+                      Auto
+                    </button>
+                  ) : (
+                    <></>
+                  )}
                   <span className="align-center">
                     <PuzzleInfo />
                   </span>
