@@ -19,6 +19,7 @@ import Numpad from "./Numpad";
 import NetStatus from "./NetStatus";
 import PuzzleController from "../utils/PuzzleMaker";
 import PuzzleInfo from "./PuzzleInfo";
+import Timer from "./Timer";
 
 /**
  * The main game mode and state. Contains the generated puzzle as well
@@ -28,6 +29,9 @@ import PuzzleInfo from "./PuzzleInfo";
 export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
   /** the current puzzle to solve */
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+
+  /** The global time when the puzzle solve started. */
+  const [startTime, setStartTime] = useState<Date | null>(null);
 
   /** all current and previous solve states */
   const [history, setHistory] = useState<SolveHistory>([
@@ -94,8 +98,13 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
     var puzzleController = new PuzzleController();
     var newPuzzle = puzzleController.makePuzzle();
-    setNewPuzzle(newPuzzle);
-    gameSocket?.send({ type: "new-puzzle", puzzle: newPuzzle });
+    var newStartTime = new Date();
+    setNewPuzzle(newPuzzle, newStartTime);
+    gameSocket?.send({
+      type: "new-puzzle",
+      puzzle: newPuzzle,
+      startTimeStr: newStartTime.toISOString(),
+    });
   }
 
   /** Called when user selects a new tile. */
@@ -162,6 +171,7 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
       gameSocket?.send({
         type: "game-state",
         puzzle: puzzle,
+        startTimeStr: startTime ? startTime.toISOString() : null,
         history: history,
         solveResult: solveResult,
         selection: selection,
@@ -179,12 +189,15 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
 
     if (message.type == "new-puzzle") {
       // init game state with new puzzle
-      setNewPuzzle(message.puzzle);
+      setNewPuzzle(message.puzzle, new Date(message.startTimeStr));
     }
 
     if (message.type == "game-state") {
       // receive all the new info
       setPuzzle(message.puzzle);
+      setStartTime(
+        message.startTimeStr ? new Date(message.startTimeStr) : null
+      );
       setHistory(message.history);
       setSolveResult(message.solveResult);
       setNetSelectionForUser(userMessage.userId, message.selection);
@@ -209,11 +222,11 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
     }
   };
 
-  function setNewPuzzle(newPuzzle: Puzzle) {
+  function setNewPuzzle(newPuzzle: Puzzle, startTime: Date) {
     setPuzzle(newPuzzle);
     setHistory([SolveController.initialState(newPuzzle)]);
     setSolveResult(SolveController.emptySolveResult());
-    console.log(newPuzzle);
+    setStartTime(startTime);
   }
 
   return (
@@ -225,6 +238,9 @@ export default function Game({ gameSocket }: { gameSocket: GameWebSocket }) {
               <button className="btn" onClick={onNewPuzzleClick}>
                 New
               </button>
+              <span className="align-center">
+                <Timer startTime={startTime} />
+              </span>
               <span className="align-right">
                 {puzzle != null ? <PuzzleInfo gameState={gameState} /> : null}
                 <NetStatus netState={netState} />

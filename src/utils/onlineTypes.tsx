@@ -29,11 +29,16 @@ type ClientJoinMessage = { type: "client-join" };
 type ClientLeaveMessage = { type: "client-leave" };
 
 /** A new puzzle has been generated */
-type NewPuzzleMessage = { type: "new-puzzle"; puzzle: Puzzle };
+type NewPuzzleMessage = {
+  type: "new-puzzle";
+  puzzle: Puzzle;
+  startTimeStr: string;
+};
 
 type GameStateMessage = {
   type: "game-state";
   puzzle: Puzzle | null;
+  startTimeStr: string | null;
   history: SolveHistory;
   solveResult: SolveResult;
   selection: number | null;
