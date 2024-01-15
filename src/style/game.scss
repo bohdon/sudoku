@@ -129,6 +129,11 @@ $completed-bg-color: hsla(156, 50%, 54%, 0.04);
     &:hover {
       filter: brightness(1.1);
     }
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
   }
 
   .numpad {

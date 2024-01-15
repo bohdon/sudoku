@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { isHotkeyPressed, useHotkeys } from "react-hotkeys-hook";
 import { GameStateContext } from "../utils/Contexts";
 
 interface NumpadProps {
@@ -23,6 +24,32 @@ export default function Numpad({ onInput }: NumpadProps) {
   function onClearClick() {
     onInput(null, isCandidate);
   }
+
+  function onNumKeyPressed(value: number) {
+    if (isHotkeyPressed("shift")) {
+      // shift + num to give confirmed input
+      onInput(value, false);
+    } else {
+      // by default input as candidates
+      onInput(value, true);
+    }
+  }
+
+  function onClearPressed() {
+    // when using hotkeys, always allow clearing both
+    onInput(null, true);
+  }
+
+  useHotkeys(["1", "shift+1"], () => onNumKeyPressed(1));
+  useHotkeys(["2", "shift+2"], () => onNumKeyPressed(2));
+  useHotkeys(["3", "shift+3"], () => onNumKeyPressed(3));
+  useHotkeys(["4", "shift+4"], () => onNumKeyPressed(4));
+  useHotkeys(["5", "shift+5"], () => onNumKeyPressed(5));
+  useHotkeys(["6", "shift+6"], () => onNumKeyPressed(6));
+  useHotkeys(["7", "shift+7"], () => onNumKeyPressed(7));
+  useHotkeys(["8", "shift+8"], () => onNumKeyPressed(8));
+  useHotkeys(["9", "shift+9"], () => onNumKeyPressed(9));
+  useHotkeys(["delete", "backspace"], () => onClearPressed());
 
   const numberButtons = numbers.map((num) => {
     const idx = num - 1;

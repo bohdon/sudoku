@@ -140,7 +140,10 @@ export default function Game({}) {
     } else {
       // set a new value
       if (isCandidate) {
-        newState = controller.toggleCandidate(selection, value);
+        // don't (invisibly) update candidates if a value is set
+        if (!controller.hasValue(selection)) {
+          newState = controller.toggleCandidate(selection, value);
+        }
       } else {
         newState = controller.setValue(selection, value);
       }
